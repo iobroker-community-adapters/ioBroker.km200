@@ -20,8 +20,8 @@
         "restartAdapters":          ["vis"]
     },
     "native": {
-//        "test1": true,
-//        "test2": 42
+        "test1": true,
+        "test2": 42
     },
     "objects": [
 
