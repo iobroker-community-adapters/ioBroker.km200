@@ -27,7 +27,7 @@
     ],
     "instanceObjects": [
     {
-      "_id": "Sensors",
+      "_id": "Actuators",
       "type": "channel",
       "common": {
         "name": "Actuators",
@@ -36,7 +36,7 @@
       "native": {}
     },
     {
-      "_id": "Actuators",
+      "_id": "Sensors",
       "type": "channel",
       "common": {
         "name": "Sensors",
