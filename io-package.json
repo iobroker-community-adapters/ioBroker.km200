@@ -2,7 +2,7 @@
     "common": {
         "name":                     "xs1",
         "version":                  "0.1.0",
-        "title":                    "Javascript/Node.js based xs1 adapter",
+        "title":                    "EZcontrol XS1 adapter",
         "desc":                     {
  			             "en": "ioBroker EZcontrol XS1 Adapter",
  			             "de": "ioBroker EZcontrol XS1 Adapter",
