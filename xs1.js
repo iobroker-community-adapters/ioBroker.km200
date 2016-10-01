@@ -31,6 +31,10 @@
 /*jslint node: true */
 "use strict";
 
+var util = require("util");
+
+function objToString(obj,level) {    return  util.inspect(obj, false, level || 2, false).replace(/\n/g,' ');}
+
 // you have to require the utils module and call adapter function
 var utils =    require(__dirname + '/lib/utils'); // Get common adapter utils
 
@@ -39,11 +43,9 @@ var utils =    require(__dirname + '/lib/utils'); // Get common adapter utils
 // adapter will be restarted automatically every time as the configuration changed, e.g system.adapter.template.0
 var adapter = utils.adapter('xs1');
 
+//adapter.log.info('Adapter SW loading');
+
 var MyXS1 =     require(__dirname + '/lib/myxs1');
-
-adapter.log.info("Started? "+ JSON.stringify(MyXS1));
-
-var myXS1 = new MyXS1();
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -92,12 +94,21 @@ adapter.on('ready', function () {
     main();
 });
 
+var myXS1 = null;
+
 function main() {
 
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
-    adapter.log.warn('config XS1 Addresse: ' + adapter.config.addresse);
-//    adapter.log.info('config test2: ' + adapter.config.test2);
+
+
+    adapter.log.warn('config XS1 Addresse: ' + adapter.config.adresse);
+    adapter.log.info("Before New "+ objToString(MyXS1));
+
+    myXS1 = new MyXS1();
+
+    adapter.log.info("after New "+ objToString(myXS1));
+    
     myXS1.on("error",function(msg) {
         adapter.log.info('Error message from XS1:'+ msg);
     });

@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "xs1",
-        "version":                  "0.1.0",
+        "version":                  "0.1.1",
         "title":                    "EZcontrol XS1 adapter",
         "desc":                     {
  			             "en": "ioBroker EZcontrol XS1 Adapter",
@@ -10,19 +10,39 @@
 	},
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
+        "loglevel":                 "info",
         "icon":                     "xs1.png",
         "enabled":                  true,
-	"extIcon":                  "https://raw.githubusercontent.com/frankjoke/ioBroker.xs1/master/admin/xs1.png",
-	"keywords":                 ["EZcontrol","XS1", "vis", "GUI", "graphical", "scada"],
+	    "extIcon":                  "https://raw.githubusercontent.com/frankjoke/ioBroker.xs1/master/admin/xs1.png",
+	    "keywords":                 ["EZcontrol","XS1", "vis", "GUI", "graphical", "scada"],
         "readme":                   "https://github.com/frankjoke/ioBroker.xs1/blob/master/README.md",
-	"loglevel":                 "info",
-        "type":                     "common adapters",
-        "restartAdapters":          ["vis"]
+        "type":                     "hardware",
+        "restartAdapters":          ["no_vis"]
     },
     "native": {
         "adresse":"http://XS1"
     },
     "objects": [
 
+    ],
+    "instanceObjects": [
+    {
+      "_id": "Sensors",
+      "type": "channel",
+      "common": {
+        "name": "Actuators",
+        "role": "XS1 iftype"
+      },
+      "native": {}
+    },
+    {
+      "_id": "Actuators",
+      "type": "channel",
+      "common": {
+        "name": "Sensors",
+        "role": "XS1 iftype"
+      },
+      "native": {}
+    }
     ]
 }
