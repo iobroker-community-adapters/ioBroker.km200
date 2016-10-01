@@ -39,7 +39,9 @@ var utils =    require(__dirname + '/lib/utils'); // Get common adapter utils
 // adapter will be restarted automatically every time as the configuration changed, e.g system.adapter.template.0
 var adapter = utils.adapter('xs1');
 
-var MyXS1 = require(__dirname + '/lib/utils');
+var MyXS1 =     require(__dirname + '/lib/myxs1');
+
+adapter.log.info("Started? "+ JSON.stringify(MyXS1));
 
 var myXS1 = new MyXS1();
 
