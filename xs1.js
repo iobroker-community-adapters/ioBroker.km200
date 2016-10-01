@@ -47,12 +47,9 @@ function MyXS1() {
 
 
     if (!(this instanceof MyXS1)) return new MyXS1();
-//    if (!url) throw 'MyXS1 url option not set!';
     EventEmitter.call(this);
 
     this.url = null;
-    this.actuators = null;
-    this.sensors = null;
     this.names = {};
     this.creq = null;
     this.resp = null;
@@ -60,10 +57,23 @@ function MyXS1() {
 
     var that = this;
     
+    that.roles = {    
+        "switch":               ["switch","timerswitch","sound","remotecontrol"],
+        "sensor":               ["door","dooropen","motion","waterdetector","window"],
+        "value.temperature":    ["temperature","number"],
+        "value.brightness":     ["light"],
+        "value.humidity":       ["hygrometer"],
+        "value":                ["counter","rainintensity"],
+        "direction":            ["winddirection"],
+        "value.speed":          ["windspeed"],
+        "level.blind":          ["shutter"],
+    };
+
+
     var types = { switch:"boolean", timerswitch:"boolean" };
 
     that.disconnect = function(callback) {
-        if(!this.connected) {
+        if(!that.connected) {
             that.emit("error","XS1 disconnect called on not connected device!");
             return;
         }
@@ -72,14 +82,14 @@ function MyXS1() {
         that.connected = false;
         that.resp = null;
         that.creq = null;
-//        that.emit('disconnected');
+        that.emit('disconnected');
     };
 
     that.connect = function(callback,msg) {
         var url = that.url + "control?callback=cb&cmd=subscribe&format=txt&x="+Date.now();
         if (that.connected) {
             that.emit("error","XS1 connect called on already connected device!");
-            return;
+            return callback && callback("XS1 already connected");
         }
         try {
             that.creq = http.get(url,function(response) {
@@ -97,10 +107,10 @@ function MyXS1() {
                     if (b.length<14) 
                         return that.emit("error", {err:"Invalid response from XS1 data",value:buf},"warn");
                     var data = {};
-                    var st = {'A':"Actuator",'S':"Sensor"};
+                    var st = {'A':"Actuators",'S':"Sensors"};
                     try {
                         data.ts = parseInt(b[0]) * 1000;
-                        data.stype = st[b[9]];
+                        data.lname = st[b[9]];
                         data.number = b[10];
                         data.name = b[11];
                         data.vtype = b[12];
@@ -117,7 +127,6 @@ function MyXS1() {
     //                that.emit('msg','error resp',err); 
                 });    
                 response.on('end',function() {
-                    that.emit('msg','end resp'); 
                     that.creq = null;
                     that.resp = null;
                     that.connected = false;
@@ -132,7 +141,6 @@ function MyXS1() {
                 that.connected = false;
                 that.creq = null;
                 that.resp = null;
-                that.emit('msg','aborted creq',that.connected); 
             });    
                
             that.creq.on('error',function(err) {
@@ -178,7 +186,7 @@ function MyXS1() {
                             for (var key=0;key < obj.length;++key) {
                                 if (obj[key].type != "disabled") {
                                     obj[key].styp = t;
-                                    obj[key].lname = t+"."+obj[key].name;
+                                    obj[key].lname = (t==='sensor'? 'Sensors.':'Actuators.')+obj[key].name;
                                     obj[key].number = key+1;
                                     na.push(obj[key]);
                                 }
@@ -203,22 +211,14 @@ function MyXS1() {
 
     };
 
-    that.getState = function(name,callback) {
-        var id = that.getNumber(name);
-        var styp = that.getStyp(name);
-        
-        that.sendXS1("get_state_"+styp+"&number="+id, function(err,obj) {
-            callback && callback(err,obj);
-        });
-        
-    };
 
     that.setState = function(name,value,callback) {
-        var fn = that.getName(name);
-        if (!fn)
-            return that.emit("error","MyXS1.setState Name not found: "+name);
-        var id = that.getNumber(fn);
-        var styp = that.getStyp(fn);
+        if (!that.names[name]) {
+            that.emit("error","MyXS1.setState Name not found: "+name);
+            return callback && callback("MyXS1.setState Name not found: "+name,null);
+        }
+        var id = that.getNumber(name);
+        var styp = that.getStyp(name);
         var val = parseFloat(value);
         
         if (styp==="actuator") {
@@ -245,20 +245,17 @@ function MyXS1() {
         that.url = url;
 
         
-        that.sendXS1("get_list_actuators",function(err,obj) {
+        that.sendXS1("get_list_actuators",function(err,actuators) {
             if (err)
                 return callback && callback(err,null);
             that.names = {};
-            that.actuators =  obj;
             that.sendXS1("get_list_sensors",function(err,obj) {
                 if (err)
                     return callback && callback(err,null);
-                that.sensors = obj;
-                var all = obj.concat(that.actuators);
+                var all = obj.concat(actuators);
                 for (var i=0;i<all.length;++i) {
                     var val = all[i];
-                    if (val.lname) 
-                        that.names[val.lname] = val;
+                    that.names[val.name] = val;
                 }
                 that.connect(callback,all);
            });
@@ -266,30 +263,34 @@ function MyXS1() {
     };
 
 
-    that.getName = function(name) {
-        if (that.names[name]!== undefined)
-            return name;
-        if (that.names["sensor."+name] !== undefined)
-            return "sensor."+name;
-        if(that.names["actuator."+name] !== undefined)
-            return "actuator."+name;
-        return null;
-    };
-
     that.getStyp = function(name) {
-        return that.names[that.getName(name)].styp;
+        return that.names[name].styp;
     };
     
     that.getNumber = function(name) {
-        return that.names[that.getName(name)].number || 0;
+        return that.names[name].number || 0;
     };
-    
+
+/*  not needed in adapter implementation  
+     
+    that.getState = function(name,callback) {
+        var id = that.getNumber(name);
+        var styp = that.getStyp(name);
+        
+        that.sendXS1("get_state_"+styp+"&number="+id, function(err,obj) {
+            callback && callback(err,obj);
+        });
+        
+    };
+
+
     that.getHistory = function(name,callback,from_s,to_s) {
         if (!name && ! callback)
-            return that.emit("error","MyXS1.getHistory argument error:("+name+","+callback+","+from_s+","+to_s);
-        var nn = that.getName(name);
-        if (!nn)
-            return that.emit("error","MyXS1.getHistory id not found:("+name+","+callback+","+from_s+","+to_s);
+            return that.emit("error","MyXS1.getHistory argument error:("+name+","+callback+","+from_s+","+to_s+')');
+        if (!that.names[name]) {
+            that.emit("error","MyXS1.getHistory id not found:("+name+","+callback+","+from_s+","+to_s+')');
+            return callback("MyXS1.getHistory id not found:("+name+","+callback+","+from_s+","+to_s+')',null);
+        }
         from_s = Math.floor((from_s || Date.now()-1000*60*60*24)/1000);
         to_s = Math.floor((to_s || Date.now())/1000);
         var id = that.getNumber(name);
@@ -316,7 +317,7 @@ function MyXS1() {
         });
         
     };
-
+*/
 }
 
 util.inherits(MyXS1, EventEmitter);
@@ -330,7 +331,7 @@ var adapter = utils.adapter('xs1');
 
 //adapter.log.info('Adapter SW loading');
 
-// var MyXS1 =     require(__dirname + '/lib/myxs1');
+var myXS1 =     new MyXS1();
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -379,19 +380,20 @@ adapter.on('ready', function () {
     main();
 });
 
-var myXS1 = null;
-
 function main() {
 
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
+    function findItem(l,i) {
+        for(var s in l)
+            if (l[s].indexOf(i)>=0)
+                return s;
+        return null;
+    }
 
 
     adapter.log.warn('config XS1 Addresse: ' + adapter.config.adresse);
     adapter.log.info("Before New "+ objToString(MyXS1));
-
-    myXS1 = new MyXS1();
-
     adapter.log.info("after New "+ objToString(myXS1));
     
     myXS1.on("error",function(msg) {
@@ -399,14 +401,70 @@ function main() {
     });
 
     myXS1.startXS1(adapter.config.adresse, function(err,obj){
-        if(err)
-            adapter.log.warn("Error came back "+err);
-        adapter.log.info("XS1 connected");
+        if(err) {
+            return adapter.log.error("Error came back, could not start XS1! "+err);
+        }
+//        adapter.log.info("XS1 connected "+objToString(myXS1.names,1));
+        async.forEachOfSeries(myXS1.names,function(o,n,callb)  {
+//            var o =     myXS1.names[n];
+//            var val =   o.value;
+            var t =     o.type;
+            var c = {
+                type: 'state',
+                common: {
+                    name:   o.lname,
+                    type:   'boolean',
+                    unit:   o.unit,
+                    read:   true,
+                    write:  true,
+                    role:   'switch'
+                },
+                native : {
+                    desc:       JSON.stringify(o),
+                    isSensor:   (o["state"] !==undefined),
+                    xs1Id:      o.id
+                }
+            };
+
+            var r = findItem(myXS1.roles,t);
+            if (r) {
+                c.common.role =r;
+                if (r.startsWith("value") || findItem({"x":["direction","level.blind"]},r)) {
+                    c.common.type = "number";
+                } else {
+                    o.val = o.val !== 0;
+                    c.common.unit = "";
+                }
+                c.native.init = o;
+                adapter.setObject(c.common.name,c,function(err) {
+//                    adapter.setState(c.common.name,val,true);
+                adapter.log.info(c.common.name+" "+ objToString(c));
+                    adapter.setState(c.common.name, { 
+                        val:c.native.init.val, 
+                        ack:true, 
+                        ts:c.native.init.utime*1000
+                    },  function(err) {
+                        callb(null);
+                    });
+                });
+            } else {
+                adapter.log.warn("Undefined type "+t + ' for ' + c.common.name);
+                callb(null);
+            }
+        }, function(err) {
+            adapter.log.info("finished states creation");
+        });
     });
 
 
     myXS1.on('data',function(msg){
-        adapter.log.info("Data received "+objToString(msg) );
+//        adapter.log.info("Data received "+objToString(msg) );
+        if(msg && msg.lname) {
+            msg.ack = true;
+            msg.q = 0;
+            adapter.setState(msg.lname+"."+msg.name,msg);
+        }
+
     });
 
     /**
@@ -419,7 +477,7 @@ function main() {
      *
      */
 
-    adapter.setObject('testVariable', {
+    adapter.setObject('Actuators.testVariable', {
         type: 'state',
         common: {
             name: 'testVariable',
@@ -441,16 +499,14 @@ function main() {
      */
 
     // the variable testVariable is set to true as command (ack=false)
-    adapter.setState('testVariable', true);
+    adapter.setState('Actuators.testVariable', true);
 
     // same thing, but the value is flagged "ack"
     // ack should be always set to true if the value is received from or acknowledged from the target system
-    adapter.setState('testVariable', {val: true, ack: true});
+    adapter.setState('Actuators.testVariable', {val: true, ack: true});
 
     // same thing, but the state is deleted after 30s (getState will return null afterwards)
-    adapter.setState('testVariable', {val: true, ack: true, expire: 30});
-
-
+    adapter.setState('Actuators.testVariable', {val: true, ack: true, expire: 30});
 
     // examples for the checkPassword/checkGroup functions
     adapter.checkPassword('admin', 'iobroker', function (res) {
