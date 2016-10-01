@@ -3,13 +3,13 @@
   "version": "0.5.0",
   "description": "ioBroker EZcontrol XS1 Adapter",
   "author": {
-    "name": "@@Author@@",
-    "email": "@@email@@"
+    "name": "Frank Joke",
+    "email": "frankjoke@hotmail.com"
   },
   "contributors": [
     {
-      "name": "@@Author@@",
-      "email": "@@email@@"
+      "name": "Frank Joke",
+      "email": "frankjoke@hotmail.com"
     }
   ],
   "homepage": "https://github.com/frankjoke/ioBroker.xs1",
@@ -39,7 +39,7 @@
       "grunt-exec": "^0.4.6"
   },
   "bugs": {
-    "url": "https://github.com/ioBroker/ioBroker.template/issues"
+    "url": "https://github.com/ioBroker/ioBroker.xs1/issues"
   },
   "readmeFilename": "README.md"
 }
