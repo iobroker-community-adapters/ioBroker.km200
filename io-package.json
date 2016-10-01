@@ -1,6 +1,6 @@
 {
     "common": {
-        "name":                     "XS1",
+        "name":                     "xs1",
         "version":                  "0.1.0",
         "title":                    "Javascript/Node.js based xs1 adapter",
         "desc":                     {
@@ -10,11 +10,11 @@
 	},
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
-        "icon":                     "EZcontrol.png",
+        "icon":                     "xs1.png",
         "enabled":                  true,
-	"extIcon":                  "https://raw.githubusercontent.com/ioBroker/ioBroker.xs1/master/admin/xs1.png",
+	"extIcon":                  "https://raw.githubusercontent.com/frankjoke/ioBroker.xs1/master/admin/xs1.png",
 	"keywords":                 ["EZcontrol","XS1", "vis", "GUI", "graphical", "scada"],
-        "readme":                   "https://github.com/ioBroker/ioBroker.xs1/blob/master/README.md",
+        "readme":                   "https://github.com/frankjoke/ioBroker.xs1/blob/master/README.md",
 	"loglevel":                 "info",
         "type":                     "common adapters",
         "restartAdapters":          ["vis"]
