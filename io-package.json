@@ -20,8 +20,7 @@
         "restartAdapters":          ["vis"]
     },
     "native": {
-        "test1": true,
-        "test2": 42
+        "adresse":"http://XS1"
     },
     "objects": [
 

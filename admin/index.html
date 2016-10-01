@@ -30,10 +30,9 @@
     // Dictionary (systemDictionary is global variable from adapter-settings.js)
     systemDictionary = {
         "xs1 adapter settings": {"de": "EZcontrol XS1", "ru": "EZcontrol XS1"},
-        "test1":                    {"en": "Test 1", "de": "Test 1", "ru": "Тест 1"},
-        "test2":                    {"en": "Test 2", "de": "Test 2", "ru": "Тест 2"},
-        "on save adapter restarts with new config immediately": {
-            "de": "Beim Speichern von Einstellungen der Adapter wird sofort neu gestartet.",
+        "adresse":                    {"en": "Link to XS1", "de": "XS1 Link", "ru": "XS1 link"},
+        "description":  {"en":"Please provide link to XS1 as 'http://ip.port'! On save adapter restarts with new config immediately",
+            "de": "Bitte Linkadresse angeben! 'http://ip:port'! Beim Speichern von Einstellungen wird der Adapter sofort neu gestartet.",
             "ru": "Сразу после сохранения настроек драйвер перезапуститься с новыми значениями"
         }
     };
@@ -80,11 +79,10 @@
         <td><h3 class="translate">xs1 adapter settings</h3></td>
     </tr></table>
     <p>
-        <span class="translate">test1</span> <input class="value" id="test1"/><br>
-        <span class="translate">test2</span> <input class="value" id="test2"/><br>
+        <span class="translate">adresse</span> <input class="value" id="adresse"/><br>
     </p>
 
-    <p class="translate">on save adapter restarts with new config immediately</p>
+    <p class="translate">description</p>
 
 </div>
 

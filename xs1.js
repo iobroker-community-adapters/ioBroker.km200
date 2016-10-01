@@ -39,10 +39,15 @@ var utils =    require(__dirname + '/lib/utils'); // Get common adapter utils
 // adapter will be restarted automatically every time as the configuration changed, e.g system.adapter.template.0
 var adapter = utils.adapter('xs1');
 
+var MyXS1 = require(__dirname + '/lib/utils');
+
+var myXS1 = new MyXS1();
+
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
     try {
         adapter.log.info('cleaned everything up...');
+        myXS1.disconnect();
         callback();
     } catch (e) {
         callback();
@@ -89,10 +94,15 @@ function main() {
 
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
-    adapter.log.info('config test1: ' + adapter.config.test1);
-    adapter.log.info('config test2: ' + adapter.config.test2);
+    adapter.log.warn('config XS1 Addresse: ' + adapter.config.addresse);
+//    adapter.log.info('config test2: ' + adapter.config.test2);
+    myXS1.on("error",function(msg) {
+        adapter.log.info('Error message from XS1:'+ msg);
+    });
 
-
+    myXS1.startXS1(adapter.config.addresse, function(){
+        adapter.log.info("XS1 connected");
+    });
     /**
      *
      *      For every state in the system there has to be also an object of type state
