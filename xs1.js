@@ -49,6 +49,16 @@ function MyXS1() {
 
     var types = { "boolean": ["switch", "sensor"] };
 
+    that.resetXS1 = function() {
+        that.url = null;
+        that.names = {};
+        that.creq = null;
+        that.resp = null;
+        that.connected = false;
+        this.removeAllListeners();
+
+    };
+
     function findItem(l,i) {
         for(var s in l)
             if (l[s].indexOf(i)>=0)
@@ -338,7 +348,7 @@ var copylist =  {};
 adapter.on('unload', function (callback) {
     try {
         adapter.log.info('cleaned everything up...');
-        myXS1.disconnect();
+//        myXS1.disconnect();
         callback();
     } catch (e) {
         callback();
@@ -390,11 +400,14 @@ adapter.on('ready', function () {
     main();
 });
 
+var mtimeout = null;
+
 function main() {
 
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
-
+    if (mtimeout) clearTimeout(mtimeout);
+    myXS1.resetXS1();
     adapter.log.info('config XS1 Addresse: ' + adapter.config.adresse);
 
     copylist = safeJson(adapter.config.copylist);
@@ -406,6 +419,14 @@ function main() {
 
     myXS1.on("error",function(msg) {
         adapter.log.warn('Error message from XS1:'+ objToString(msg));
+    });
+
+    myXS1.on("disconnected",function(msg) {
+        adapter.log.error('Got disconnected from XS1, will restart in 5 sec!'+ objToString(msg));
+        myXS1.disconnect();
+        myXS1.resetXS1();
+        if (mtimeout) clearTimeout(mtimeout);
+        mtimeout = setTimeout(main,5000); 
     });
 
     myXS1.startXS1(adapter.config.adresse, function(err,obj){
