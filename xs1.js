@@ -347,17 +347,26 @@ adapter.on('unload', function (callback) {
 // is called if a subscribed object changes
 adapter.on('objectChange', function (id, obj) {
     // Warning, obj can be null if it was deleted
-    adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
+    adapter.log.info('objectChange ' + id + ' ' + objToString(obj));
 });
 
 // is called if a subscribed state changes
 adapter.on('stateChange', function (id, state) {
     // Warning, state can be null if it was deleted
-    adapter.log.info('stateChange ' + id + ' ' + JSON.stringify(state));
+    adapter.log.info('stateChange ' + id + ' ' + objToString(state));
 
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
-        adapter.log.info('ack is not set!');
+        var idn = id.split('.');
+        var name = idn[idn.length-1];
+        var obj = myXS1.names[name];
+        var typ = idn[idn.length-2];
+        if (typ!=="Actuators") {
+            adapter.log.warn("XS1 cannot set state of Sensor "+name+" to "+ objToString(state) );
+        } else {
+//            adapter.log.info(util.inspect(obj) + ' set to '+ objToString(state));
+            myXS1.setState(name,state.val);
+        }
     }
 });
 
@@ -392,17 +401,15 @@ function main() {
     }
 
 
-    adapter.log.warn('config XS1 Addresse: ' + adapter.config.adresse);
-    adapter.log.info("Before New "+ objToString(MyXS1));
-    adapter.log.info("after New "+ objToString(myXS1));
-    
+    adapter.log.info('config XS1 Addresse: ' + adapter.config.adresse);
+
     myXS1.on("error",function(msg) {
-        adapter.log.info('Error message from XS1:'+ msg);
+        adapter.log.warn('Error message from XS1:'+ msg);
     });
 
     myXS1.startXS1(adapter.config.adresse, function(err,obj){
         if(err) {
-            return adapter.log.error("Error came back, could not start XS1! "+err);
+            return adapter.log.error("Could not start XS1! Err:"+err);
         }
 //        adapter.log.info("XS1 connected "+objToString(myXS1.names,1));
         async.forEachOfSeries(myXS1.names,function(o,n,callb)  {
@@ -435,10 +442,11 @@ function main() {
                     o.val = o.val !== 0;
                     c.common.unit = "";
                 }
+                o.common = c.common;
                 c.native.init = o;
                 adapter.setObject(c.common.name,c,function(err) {
 //                    adapter.setState(c.common.name,val,true);
-                adapter.log.info(c.common.name+" "+ objToString(c));
+                    adapter.log.info(c.common.name+" "+ objToString(c));
                     adapter.setState(c.common.name, { 
                         val:c.native.init.val, 
                         ack:true, 
@@ -453,16 +461,42 @@ function main() {
             }
         }, function(err) {
             adapter.log.info("finished states creation");
+            adapter.subscribeStates('*'); // subscribe to states only now
         });
     });
 
 
     myXS1.on('data',function(msg){
 //        adapter.log.info("Data received "+objToString(msg) );
+        var copylist = {
+            UWPumpeT2:  "UWPumpe",
+            UWPumpe:    "UWPumpeT2",
+            UWLicht:    "UWLichtT3",
+            UWLichtT3:  "UWLicht",
+            GartenLichtT1:  "GartenLicht",
+            GartenLicht:    "GartenLichtT1"
+        };
         if(msg && msg.lname) {
             msg.ack = true;
             msg.q = 0;
             adapter.setState(msg.lname+"."+msg.name,msg);
+            var o = myXS1.names[msg.name];
+            if (o) {
+                o.oldValue = o.value;
+                o.newValue = o.value = msg.val;
+                var cl = copylist[msg.name];
+                if (cl)
+                    cl = cl.split(',');
+                for (var i in cl) {
+                    var cn = cl[i];
+                    var co = myXS1.names[cn].value;
+                    if (typeof o.newValue === 'boolean'  && typeof co === 'number')
+                        co = co != 0;
+//                    adapter.log.info(cn + "old " + co + " is new " +o.newValue);
+                    if (co != o.newValue)
+                        myXS1.setState(cn,o.newValue);
+                }
+            }
         }
 
     });
@@ -475,7 +509,7 @@ function main() {
      *
      *      Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
      *
-     */
+     *
 
     adapter.setObject('Actuators.testVariable', {
         type: 'state',
@@ -486,9 +520,8 @@ function main() {
         },
         native: {}
     });
-
+    */
     // in this template all states changes inside the adapters namespace are subscribed
-    adapter.subscribeStates('*');
 
 
     /**
@@ -497,7 +530,7 @@ function main() {
      *   you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
      *
      */
-
+/*
     // the variable testVariable is set to true as command (ack=false)
     adapter.setState('Actuators.testVariable', true);
 
@@ -517,6 +550,6 @@ function main() {
         console.log('check group user admin group admin: ' + res);
     });
 
-
+*/
 
 }
