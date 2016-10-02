@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "xs1",
-        "version":                  "0.1.1",
+        "version":                  "0.2.1",
         "title":                    "EZcontrol XS1 adapter",
         "desc":                     {
  			             "en": "ioBroker EZcontrol XS1 Adapter",
@@ -20,7 +20,8 @@
         "restartAdapters":          ["no_vis"]
     },
     "native": {
-        "adresse":"http://XS1"
+        "adresse":"http://XS1",
+        "copylist": "{}"
     },
     "objects": [
 

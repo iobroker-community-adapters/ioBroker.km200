@@ -1,29 +1,6 @@
 /**
  *
- * template adapter
- *
- *
- *  file io-package.json comments:
- *
- *  {
- *      "common": {
- *          "name":         "template",                  // name has to be set and has to be equal to adapters folder name and main file name excluding extension
- *          "version":      "0.0.0",                    // use "Semantic Versioning"! see http://semver.org/
- *          "title":        "Node.js template Adapter",  // Adapter title shown in User Interfaces
- *          "authors":  [                               // Array of authord
- *              "name <mail@template.com>"
- *          ]
- *          "desc":         "template adapter",          // Adapter description shown in User Interfaces. Can be a language object {de:"...",ru:"..."} or a string
- *          "platform":     "Javascript/Node.js",       // possible values "javascript", "javascript/Node.js" - more coming
- *          "mode":         "daemon",                   // possible values "daemon", "schedule", "subscribe"
- *          "schedule":     "0 0 * * *"                 // cron-style schedule. Only needed if mode=schedule
- *          "loglevel":     "info"                      // Adapters Log Level
- *      },
- *      "native": {                                     // the native object is available via adapter.config in your adapters code - use it for configuration
- *          "test1": true,
- *          "test2": 42
- *      }
- *  }
+ * EZcontrol XS1 Adapter
  *
  */
 
@@ -57,7 +34,7 @@ function MyXS1() {
 
     var that = this;
     
-    that.roles = {    
+    var roles = {    
         "switch":               ["switch","timerswitch","sound","remotecontrol"],
         "sensor":               ["door","dooropen","motion","waterdetector","window"],
         "value.temperature":    ["temperature","number"],
@@ -70,7 +47,30 @@ function MyXS1() {
     };
 
 
-    var types = { switch:"boolean", timerswitch:"boolean" };
+    var types = { "boolean": ["switch", "sensor"] };
+
+    function findItem(l,i) {
+        for(var s in l)
+            if (l[s].indexOf(i)>=0)
+                return s;
+        return null;
+    }
+
+    that.getRole = function(vtype) {
+        return findItem(roles,vtype);
+    }
+
+    that.getType = function(vtype) {
+        var role = findItem(roles,vtype);
+        var type = 'number';
+        if (role) {
+            var typ = findItem(types,role);
+            if (typ) 
+                type = typ;
+        }
+        return type;
+    }
+
 
     that.disconnect = function(callback) {
         if(!that.connected) {
@@ -115,8 +115,8 @@ function MyXS1() {
                         data.name = b[11];
                         data.vtype = b[12];
                         data.val = parseFloat(b[13]);
-                        if (types[data.vtype]==="boolean")
-                            data.val = data.val>0;
+                        if (myXS1.getType(data.vtype)==="boolean")
+                            data.val = (data.val === 0 || data.val === false) ? false : !!data.val ;
                     } catch(e) {
                         return that.emit("error", {err:"Cannot read response from XS1 data",value:buf,arrcode:e},"warn");
                     }
@@ -332,6 +332,7 @@ var adapter = utils.adapter('xs1');
 //adapter.log.info('Adapter SW loading');
 
 var myXS1 =     new MyXS1();
+var copylist =  {};
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -393,18 +394,18 @@ function main() {
 
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
-    function findItem(l,i) {
-        for(var s in l)
-            if (l[s].indexOf(i)>=0)
-                return s;
-        return null;
-    }
-
 
     adapter.log.info('config XS1 Addresse: ' + adapter.config.adresse);
 
+    copylist = safeJson(adapter.config.copylist);
+    if (!copylist)
+        copylist = {};
+// my personal one is
+// '{"UWPumpeT2":"UWPumpe","UWPumpe":"UWPumpeT2","UWLicht":"UWLichtT3","UWLichtT3":"UWLicht","GartenLichtT1":"GartenLicht","GartenLicht":"GartenLichtT1"}'
+    adapter.log.info("CopyList = "+objToString(copylist));
+
     myXS1.on("error",function(msg) {
-        adapter.log.warn('Error message from XS1:'+ msg);
+        adapter.log.warn('Error message from XS1:'+ objToString(msg));
     });
 
     myXS1.startXS1(adapter.config.adresse, function(err,obj){
@@ -433,19 +434,17 @@ function main() {
                 }
             };
 
-            var r = findItem(myXS1.roles,t);
+            var r = myXS1.getRole(t);
             if (r) {
                 c.common.role =r;
-                if (r.startsWith("value") || findItem({"x":["direction","level.blind"]},r)) {
-                    c.common.type = "number";
-                } else {
-                    o.val = o.val !== 0;
+                c.common.type = myXS1.getType(t);
+                if (c.common.type === 'boolean') {
+                    o.val = (o.val === false || o.val === 0) ? false : !!o.val;
                     c.common.unit = "";
                 }
                 o.common = c.common;
                 c.native.init = o;
                 adapter.setObject(c.common.name,c,function(err) {
-//                    adapter.setState(c.common.name,val,true);
                     adapter.log.info(c.common.name+" "+ objToString(c));
                     adapter.setState(c.common.name, { 
                         val:c.native.init.val, 
@@ -468,14 +467,6 @@ function main() {
 
     myXS1.on('data',function(msg){
 //        adapter.log.info("Data received "+objToString(msg) );
-        var copylist = {
-            UWPumpeT2:  "UWPumpe",
-            UWPumpe:    "UWPumpeT2",
-            UWLicht:    "UWLichtT3",
-            UWLichtT3:  "UWLicht",
-            GartenLichtT1:  "GartenLicht",
-            GartenLicht:    "GartenLichtT1"
-        };
         if(msg && msg.lname) {
             msg.ack = true;
             msg.q = 0;
@@ -501,55 +492,5 @@ function main() {
 
     });
 
-    /**
-     *
-     *      For every state in the system there has to be also an object of type state
-     *
-     *      Here a simple template for a boolean variable named "testVariable"
-     *
-     *      Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-     *
-     *
-
-    adapter.setObject('Actuators.testVariable', {
-        type: 'state',
-        common: {
-            name: 'testVariable',
-            type: 'boolean',
-            role: 'indicator'
-        },
-        native: {}
-    });
-    */
-    // in this template all states changes inside the adapters namespace are subscribed
-
-
-    /**
-     *   setState examples
-     *
-     *   you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-     *
-     */
-/*
-    // the variable testVariable is set to true as command (ack=false)
-    adapter.setState('Actuators.testVariable', true);
-
-    // same thing, but the value is flagged "ack"
-    // ack should be always set to true if the value is received from or acknowledged from the target system
-    adapter.setState('Actuators.testVariable', {val: true, ack: true});
-
-    // same thing, but the state is deleted after 30s (getState will return null afterwards)
-    adapter.setState('Actuators.testVariable', {val: true, ack: true, expire: 30});
-
-    // examples for the checkPassword/checkGroup functions
-    adapter.checkPassword('admin', 'iobroker', function (res) {
-        console.log('check user admin pw ioboker: ' + res);
-    });
-
-    adapter.checkGroup('admin', 'admin', function (res) {
-        console.log('check group user admin group admin: ' + res);
-    });
-
-*/
 
 }

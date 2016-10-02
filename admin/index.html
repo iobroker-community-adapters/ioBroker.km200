@@ -31,6 +31,7 @@
     systemDictionary = {
         "xs1 adapter settings": {"de": "EZcontrol XS1", "ru": "EZcontrol XS1"},
         "adresse":                    {"en": "Link to XS1", "de": "XS1 Link", "ru": "XS1 link"},
+        "copylist": {"en":"object list to copy inputs to other actuators when received from XS1 {input:'output,output',...}"},
         "description":  {"en":"Please provide link to XS1 as 'http://ip.port'! On save adapter restarts with new config immediately",
             "de": "Bitte Linkadresse angeben! 'http://ip:port'! Beim Speichern von Einstellungen wird der Adapter sofort neu gestartet.",
             "ru": "Сразу после сохранения настроек драйвер перезапуститься с новыми значениями"
@@ -80,6 +81,9 @@
     </tr></table>
     <p>
         <span class="translate">adresse</span> <input class="value" id="adresse"/><br>
+    </p>
+    <p>
+        <span class="translate">copylist</span> <input class="value" id="copylist"/><br>
     </p>
 
     <p class="translate">description</p>
