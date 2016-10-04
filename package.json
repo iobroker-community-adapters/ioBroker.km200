@@ -26,7 +26,8 @@
     "url": "https://github.com/frankjoke/ioBroker.km200"
   },
   "dependencies": {
-    "async": "^2.0.1"
+    "async": "^2.0.1",
+    "mcrypt": "^0.1.11"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
