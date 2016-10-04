@@ -1,7 +1,7 @@
 {
-  "name": "iobroker.xs1",
+  "name": "iobroker.km200",
   "version": "0.1.0",
-  "description": "ioBroker EZcontrol XS1 Adapter",
+  "description": "ioBroker Buderus KM200 Adapter",
   "author": {
     "name": "Frank Joke",
     "email": "frankjoke@hotmail.com"
@@ -12,18 +12,18 @@
       "email": "frankjoke@hotmail.com"
     }
   ],
-  "homepage": "https://github.com/frankjoke/ioBroker.xs1",
+  "homepage": "https://github.com/frankjoke/ioBroker.km200",
   "license": "MIT",
   "keywords": [
     "ioBroker",
-    "XS1",
-    "EZcontrol",
+    "KM200",
+    "Buderus",
     "Smart Home",
     "home automation"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/frankjoke/ioBroker.xs1"
+    "url": "https://github.com/frankjoke/ioBroker.km200"
   },
   "dependencies": {
     "async": "^2.0.1"
@@ -40,8 +40,8 @@
     "grunt-exec": "^0.4.6"
   },
   "bugs": {
-    "url": "https://github.com/ioBroker/ioBroker.xs1/issues"
+    "url": "https://github.com/ioBroker/ioBroker.km200/issues"
   },
-  "main": "xs1.js",
+  "main": "km200.js",
   "readmeFilename": "README.md"
 }

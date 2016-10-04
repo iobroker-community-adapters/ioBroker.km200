@@ -1,49 +1,35 @@
 {
     "common": {
-        "name":                     "xs1",
+        "name":                     "km200",
         "version":                  "0.2.1",
-        "title":                    "EZcontrol XS1 adapter",
+        "title":                    "Buderus KM200 adapter",
         "desc":                     {
- 			             "en": "ioBroker EZcontrol XS1 Adapter",
- 			             "de": "ioBroker EZcontrol XS1 Adapter",
- 			             "ru": "ioBroker EZcontrol XS1 драйвер как образец"
+ 			             "en": "ioBroker Buderus KM200 Adapter",
+ 			             "de": "ioBroker Buderus KM200 Adapter",
+ 			             "ru": "ioBroker Buderus KM200 драйвер как образец"
 	},
         "platform":                 "Javascript/Node.js",
         "mode":                     "daemon",
         "loglevel":                 "info",
-        "icon":                     "xs1.png",
-        "enabled":                  true,
-	    "extIcon":                  "https://raw.githubusercontent.com/frankjoke/ioBroker.xs1/master/admin/xs1.png",
-	    "keywords":                 ["EZcontrol","XS1", "vis", "GUI", "graphical", "scada"],
-        "readme":                   "https://github.com/frankjoke/ioBroker.xs1/blob/master/README.md",
+        "icon":                     "km200.png",
+        "enabled":                  false,
+	    "extIcon":                  "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
+	    "keywords":                 ["Buderus","KM200", "vis", "GUI", "graphical", "scada"],
+        "readme":                   "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
         "type":                     "hardware",
         "restartAdapters":          ["no_vis"]
     },
     "native": {
-        "adresse":"http://XS1",
-        "copylist": "{}"
+        "adresse":"KM200.fritz.box",
+        "port":80,
+        "blacklist": "{}",
+        "interval": 15,
+        "acceskey":"hexstring"
     },
     "objects": [
 
     ],
     "instanceObjects": [
-    {
-      "_id": "Actuators",
-      "type": "channel",
-      "common": {
-        "name": "Actuators",
-        "role": "XS1 iftype"
-      },
-      "native": {}
-    },
-    {
-      "_id": "Sensors",
-      "type": "channel",
-      "common": {
-        "name": "Sensors",
-        "role": "XS1 iftype"
-      },
-      "native": {}
-    }
+      
     ]
 }

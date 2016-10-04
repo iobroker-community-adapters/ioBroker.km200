@@ -29,10 +29,10 @@
 
     // Dictionary (systemDictionary is global variable from adapter-settings.js)
     systemDictionary = {
-        "xs1 adapter settings": {"de": "EZcontrol XS1", "ru": "EZcontrol XS1"},
-        "adresse":                    {"en": "Link to XS1", "de": "XS1 Link", "ru": "XS1 link"},
-        "copylist": {"en":"object list to copy inputs to other actuators when received from XS1 {input:'output,output',...}"},
-        "description":  {"en":"Please provide link to XS1 as 'http://ip.port'! On save adapter restarts with new config immediately",
+        "KM200 adapter settings": {"de": "Buderus KM200", "ru": "Buderus KM200"},
+        "adresse":                    {"en": "Link to KM200", "de": "KM200 Link", "ru": "KM200 link"},
+        "blacklist": {"en":"object list to copy inputs to other actuators when received from KM200 {input:'output,output',...}"},
+        "description":  {"en":"Please provide link to KM200 as 'http://ip.port'! On save adapter restarts with new config immediately",
             "de": "Bitte Linkadresse angeben! 'http://ip:port'! Beim Speichern von Einstellungen wird der Adapter sofort neu gestartet.",
             "ru": "Сразу после сохранения настроек драйвер перезапуститься с новыми значениями"
         }
@@ -76,8 +76,8 @@
 <div id="adapter-container">
 
     <table><tr>
-        <td><img src="EZcontrol.png"/></td>
-        <td><h3 class="translate">xs1 adapter settings</h3></td>
+        <td><img src="km200.png"/></td>
+        <td><h3 class="translate">KM200 adapter settings</h3></td>
     </tr></table>
     <p>
         <span class="translate">adresse</span> <input class="value" id="adresse"/><br>

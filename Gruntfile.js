@@ -21,7 +21,7 @@ module.exports = function (grunt) {
     if (process.argv[2] == 'rename') {
 		console.log('Try to rename to "' + newname + '"');
         if (!newname) {
-            console.log('Please write the new xs1 name, like: "grunt rename --name=mywidgetset" --author="Author Name"');
+            console.log('Please write the new km200 name, like: "grunt rename --name=mywidgetset" --author="Author Name"');
             process.exit();
         }
         if (newname.indexOf(' ') != -1) {
@@ -32,17 +32,17 @@ module.exports = function (grunt) {
             console.log('Name must be lower case.');
             process.exit();
         }
-        if (fs.existsSync(__dirname + '/admin/xs1.png')) {
-            fs.renameSync(__dirname + '/admin/xs1.png',              __dirname + '/admin/' + newname + '.png');
+        if (fs.existsSync(__dirname + '/admin/km200.png')) {
+            fs.renameSync(__dirname + '/admin/km200.png',              __dirname + '/admin/' + newname + '.png');
         }
-        if (fs.existsSync(__dirname + '/widgets/xs1.html')) {
-            fs.renameSync(__dirname + '/widgets/xs1.html',           __dirname + '/widgets/' + newname + '.html');
+        if (fs.existsSync(__dirname + '/widgets/km200.html')) {
+            fs.renameSync(__dirname + '/widgets/km200.html',           __dirname + '/widgets/' + newname + '.html');
         }
-        if (fs.existsSync(__dirname + '/widgets/xs1/js/xs1.js')) {
-            fs.renameSync(__dirname + '/widgets/xs1/js/xs1.js', __dirname + '/widgets/xs1/js/' + newname + '.js');
+        if (fs.existsSync(__dirname + '/widgets/km200/js/km200.js')) {
+            fs.renameSync(__dirname + '/widgets/km200/js/km200.js', __dirname + '/widgets/km200/js/' + newname + '.js');
         }
-        if (fs.existsSync(__dirname + '/widgets/xs1')) {
-            fs.renameSync(__dirname + '/widgets/xs1',                __dirname + '/widgets/' + newname);
+        if (fs.existsSync(__dirname + '/widgets/km200')) {
+            fs.renameSync(__dirname + '/widgets/km200',                __dirname + '/widgets/' + newname);
         }
     }
 
@@ -100,7 +100,7 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         {
-                            match: /xs1/g,
+                            match: /km200/g,
                             replacement: newname
                         },
                         {
