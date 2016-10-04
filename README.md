@@ -1,7 +1,7 @@
-![Logo](admin/EZcontrol.png)
-# ioBroker.xs1
+![Logo](admin/km200.png)
+# ioBroker.km200
 =================
-## ioBroker adapter zu EZcontrol XS1
+## ioBroker adapter Buderus KM200
 
 ## Changelog
 
