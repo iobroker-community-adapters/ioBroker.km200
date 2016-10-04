@@ -1,5 +1,5 @@
 /*
-    ioBroker.xs1 Widget-Set
+    ioBroker.km200 Widget-Set
 
     version: "0.5.0"
 
@@ -28,13 +28,13 @@ $.extend(true, systemDictionary, {
     "Instance":  {"en": "Instance", "de": "Instanz", "ru": "Инстанция"}
 });
 
-// this code can be placed directly in xs1.html
-vis.binds.xs1 = {
+// this code can be placed directly in km200.html
+vis.binds.km200 = {
     version: "0.5.0",
     showVersion: function () {
-        if (vis.binds.xs1.version) {
-            console.log('Version xs1: ' + vis.binds.xs1.version);
-            vis.binds.xs1.version = null;
+        if (vis.binds.km200.version) {
+            console.log('Version km200: ' + vis.binds.km200.version);
+            vis.binds.km200.version = null;
         }
     },
 	createWidget: function (widgetID, view, data, style) {
@@ -42,7 +42,7 @@ vis.binds.xs1 = {
         // if nothing found => wait
         if (!$div.length) {
             return setTimeout(function () {
-                vis.binds.xs1.createWidget(widgetID, view, data, style);
+                vis.binds.km200.createWidget(widgetID, view, data, style);
             }, 100);
         }
 
@@ -59,10 +59,10 @@ vis.binds.xs1 = {
         // subscribe on updates of value
         if (data.oid) {
             vis.states.bind(data.oid + '.val', function (e, newVal, oldVal) {
-                $div.find('.xs1-value').html(newVal);
+                $div.find('.km200-value').html(newVal);
             });
         }
     }
 };
 	
-vis.binds.xs1.showVersion();
+vis.binds.km200.showVersion();

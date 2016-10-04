@@ -20,11 +20,11 @@
         "restartAdapters":          ["no_vis"]
     },
     "native": {
-        "adresse":"KM200.fritz.box",
+        "adresse":"BuderusKM200.fritz.box",
         "port":80,
         "blacklist": "{}",
         "interval": 15,
-        "acceskey":"hexstring"
+        "accesskey":"hexstring"
     },
     "objects": [
 

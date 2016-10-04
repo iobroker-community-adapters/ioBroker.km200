@@ -104,8 +104,8 @@ module.exports = function (grunt) {
                             replacement: newname
                         },
                         {
-                            match: /Xs1/g,
-                            replacement: newname ? (newname[0].toUpperCase() + newname.substring(1)) : 'Xs1'
+                            match: /KM200/g,
+                            replacement: newname ? (newname[0].toUpperCase() + newname.substring(1)) : 'km200'
                         },
                         {
                             match: /Frank Joke/g,
