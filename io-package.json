@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "km200",
-        "version":                  "0.2.1",
+        "version":                  "0.0.1",
         "title":                    "Buderus KM200 adapter",
         "desc":                     {
  			             "en": "ioBroker Buderus KM200 Adapter",
@@ -22,7 +22,7 @@
     "native": {
         "adresse":"BuderusKM200.fritz.box",
         "port":80,
-        "blacklist": "{}",
+        "blacklist": "[]",
         "interval": 15,
         "accesskey":"hexstring"
     },

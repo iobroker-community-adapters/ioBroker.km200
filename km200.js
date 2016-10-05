@@ -33,7 +33,7 @@ var adapter = utils.adapter('km200');
 
 function KM200() {
     if (!(this instanceof KM200)) return new KM200(url);
-    EventEmitter.call(this);
+//    EventEmitter.call(this);
     var that =      this;
     that.crypt =    null;
     that.aesKey =   null;   // buffer will be generated on init from accessKey
@@ -161,23 +161,7 @@ function KM200() {
               });
         }).on('error',callback);
     };
-    
-    function setitem(l,data,tree) {
-        var obj = tree;
-        if (l.length<1)
-            return;
-        for(var i=i;i<l.length;++i) {
-            var li = l[i];
-            if (typeof obj[li]!=='undefined') {
-                obj = obj[li];
-            } else {
-                obj[li] = {};
-                obj = obj[li];
-            }
-        }
-        obj[l[l.length-1]] = data;
-    }
-    
+
     function isBlocked(id) {
         for (var i=0;i<that.blocked.length;++i) {
             if(that.blocked[i].test(id))
@@ -187,14 +171,18 @@ function KM200() {
     }
     
     that.getServices = function(callback) {
+        if(!callback)
+            adapter.log.warn('KM200 getServices no callback');
         var nlist = [].concat(that.basicServices);
         that.services = {};
+
         async.whilst(
-            function(){return nlist.length>0}, 
+            function() {return nlist.length>0}, 
             function(callb) {
-                item = nlist.shift();
+                var item = nlist.shift();
+                
                 that.get(item,function(err,data) {
-                    if (err || !data || stop) 
+                    if (err || !data) 
                         return callb(null);
                     if (Array.isArray(data)) {
                         for (var i = 0; i< data.length; ++i) {
@@ -205,19 +193,20 @@ function KM200() {
                         }
                     } else if (!isBlocked(item)) {
                         var objl = item.split('/');
-                        setitem(objl.slice(1,objl.length),data,that.services);
+                        objl = objl.slice(1,objl.length).join('.');
+                        adapter.log.info(objl + " = " + objToString(data.value));
+                        that.services[objl]= data;
                     }
                     setTimeout(callb,100); // just wait some time to give us the chance recover :)
                 });
+                     
             },callback);
-    };     
+    };    
 }
 
-util.inherits(KM200, EventEmitter);
+//util.inherits(KM200, EventEmitter);
 
 var km200 = new KM200();
-
-var copylist =  {};
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -272,22 +261,34 @@ function main() {
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
     if (mtimeout) clearTimeout(mtimeout);
+
     adapter.log.info('config KM200 Addresse: ' + adapter.config.adresse);
     adapter.log.info('config KM200 Addresse: ' + adapter.config.port);
     adapter.log.info('config KM200 Addresse: ' + adapter.config.accesskey);
+    adapter.log.info('config KM200 Addresse: ' + adapter.config.blacklist);
+    adapter.log.info('config KM200 Addresse: ' + adapter.config.interval);
 
     km200.init(adapter.config.adresse,adapter.config.port,adapter.config.accesskey);
 
     var blacklist = safeJson(adapter.config.blacklist);
+
     if (blacklist && Array.isArray(blacklist))
         km200.addBlocked(blacklist);
     else
         adapter.log.warn("KM200: invalid blacklist:'"+adapter.config.blacklist+"'");
 
-    km200.getServices( function(err,obj){
-        if(Object.keys(km200.services).length === 0) {
+    km200.getServices(function(err,obj){
+        var s = Object.keys(km200.services);
+        if(s.length === 0) {
             return adapter.log.error("Didi not get any Services from KLM200!: "+ objToString(km200.services));
         }
+        for(var i in km200.services) {
+//                        adapter.log.info(i);
+
+//            adapter.log.info(i+" = "+km200.services[i]);
+        }
+
+    });
 /*
         async.forEachOfSeries(myKM200.names,function(o,n,callb)  {
 
@@ -337,8 +338,8 @@ function main() {
             adapter.log.info("finished states creation");
             adapter.subscribeStates('*'); // subscribe to states only now
         });
-*/  
 
     });
+*/  
 
 }
