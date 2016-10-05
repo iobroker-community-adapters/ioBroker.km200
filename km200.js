@@ -38,7 +38,9 @@ function KM200() {
     that.crypt =    null;
     that.aesKey =   null;   // buffer will be generated on init from accessKey
     that.options =  null;
+    that.scannedServices = null;
     that.blocked =  [];
+    that.pushed =   [];
     that.basicServices =    [
         "/dhwCircuits",
     	"/gateway",
@@ -49,7 +51,6 @@ function KM200() {
     	"/solarCircuits",
     	"/system",
     ];
-    that.services =     {};
 /*  
  *  initialize  KM200
  *  accessUrl = string  z.b. 192.168.1.xxx oder wie bei mir BuderusKM200.fritz.box
@@ -61,7 +62,7 @@ function KM200() {
         if (!accessUrl || !accessKey) 
             return adapter.log.warn('KM200.init argument error:init('+accessUrl+', '+accessPort+', '+accessKey+'), no init done!');
         that.aesKey =   new Buffer(accessKey,'hex');
-        that.services =     [];
+        that.scannedServices = null;
         that.blocked =      [];
         that.crypt =    new MCrypt('rijndael-128', 'ecb');
         that.crypt.open(that.aesKey);
@@ -86,6 +87,12 @@ function KM200() {
             list = [list];
         for(var i=0; i<list.length;i++) {
             var li = list[i];
+            var ispush = false;
+            if (li.startsWith('+')) {
+                li = li.slice(1,li.length);
+                ispush = true;
+            } else if (li.startsWith('-'))
+                li = li.slice(1,li.length);
             if (!li.startsWith('^/')) {
                 if (!li.startsWith('/')) {
                     if (!li.startsWith('^')) 
@@ -100,7 +107,7 @@ function KM200() {
             var j = li.indexOf('*');
             if (j>1 && li[j-1]!='.') 
                 li = li.slice(0,j) +'.' +li.slice(j,li.length); 
-            that.blocked.push(new RegExp(li));
+            (ispush? that.pushed : that.blocked).push(new RegExp(li));
         }
     };
 
@@ -163,10 +170,21 @@ function KM200() {
     };
 
     function isBlocked(id) {
-        for (var i=0;i<that.blocked.length;++i) {
-            if(that.blocked[i].test(id))
-                return true;
+        for (var i=0;i<that.pushed.length;++i) {
+            if(that.pushed[i].test(id)) {
+//                adapter.log.info(id+ ' was found in pushed with ' + that.pushed[i] );
+                return false;
+            }
         }
+        for (var i=0;i<that.blocked.length;++i) {
+            if(that.blocked[i].test(id)) {
+//                adapter.log.info(id+ ' was found in blocked with ' + that.blocked[i] );
+                return true;
+            }
+        }
+
+//        adapter.log.info(id+ ' was not found!');
+
         return false;
     }
     
@@ -174,8 +192,8 @@ function KM200() {
         if(!callback)
             adapter.log.warn('KM200 getServices no callback');
         var nlist = [].concat(that.basicServices);
-        that.services = {};
-
+        var services = {};
+        that.scannedServices = null;
         async.whilst(
             function() {return nlist.length>0}, 
             function(callb) {
@@ -192,15 +210,33 @@ function KM200() {
                             }
                         }
                     } else if (!isBlocked(item)) {
+                        if (data.setpointProperty)
+                            nlist.push(data.setpointProperty);
+                        if (data.recordedResource)
+                            nlist.push(data.recordedResource.id);
                         var objl = item.split('/');
                         objl = objl.slice(1,objl.length).join('.');
-                        adapter.log.info(objl + " = " + objToString(data.value));
-                        that.services[objl]= data;
-                    }
+//                        adapter.log.info(objl + " = " + objToString(data.value));
+                        services[objl]= data;
+                    } 
                     setTimeout(callb,100); // just wait some time to give us the chance recover :)
                 });
                      
-            },callback);
+            },function (err) {
+                
+                var s = Object.keys(services);
+                if(s.length === 0) {
+                    return callback("Didi not get any Services from KLM200!: "+ objToString(services));
+                }
+                s.sort();
+                var ns = {};
+                for(var i=0; i<s.length; ++i) {
+                    ns[s[i]] = services[s[i]];
+                }
+                that.scannedServices = ns; 
+                
+                callback(null,that.scannedServices);          
+            });
     };    
 }
 
@@ -256,17 +292,92 @@ adapter.on('ready', function () {
 
 var mtimeout = null;
 
+var states = {};
+
+function createStates() {
+        states = {};
+// I got Types:{ floatValue: 89, stringValue: 36, switchProgram: 4, systeminfo: 3, errorList: 1, yRecording: 8, arrayData: 5 }
+//       Units:{ C: 34, undefined: 57, 'l/min': 1, mins: 7, '%': 12, kW: 13, 'µA': 2, Pascal: 2, kWh: 6, 'kg/l': 2, ' ': 6, 'l/h': 2, bar: 2 }
+// looks like: { id: 146,   type: 146,   writeable: 146,   recordable: 142,   value: 125,   unitOfMeasure: 89,   
+//      allowedValues: 27,   setpointProperty: 4,   maxNbOfSwitchPoints: 4,   maxNbOfSwitchPointsPerDay: 4,   switchPointTimeRaster: 4,   
+//      switchPoints: 4,   minValue: 12,   maxValue: 12,   values: 9,   recordedResource: 8,   interval: 8,   sampleRate: 8,   
+//      'recording-type': 8,   recording: 8 }
+        async.forEachOfSeries(km200.scannedServices,function(o,n,callb)  {
+            var t = o.type;
+            var u = o.unitOfMeasure;
+            var v = o.value;
+            if (v == -3276.8)
+                return callb(null);
+            var w = !!o.writeable;
+            var r =  w ? 'level' : 'value';
+            if (u === 'C') {
+                u = '°C';
+                r += '.temperature';
+            } else if(typeof u === 'undefined)')
+                u = "";
+            switch(t) {
+                case 'floatValue':
+                    t = 'number';
+                    break;
+                case 'systeminfo':
+                case 'errorList':
+                case 'arrayData':
+                    v = o.values;
+                    t = 'array';
+                    break;
+                default:
+                    t = 'string';
+                    break;
+            }
+                
+            var c = {
+                type: 'state',
+                common: {
+                    name:   n,
+                    type:   t,
+                    unit:   u,
+                    read:   true,
+                    write:  w,
+                    role:   r,
+                },
+                native : {
+                    km200: o
+               }
+            };
+            states[n]=c;
+            adapter.setObject(n,c,function(err) {
+                adapter.log.info(n+" "+ objToString(c));
+                adapter.setState(n, { 
+                    val:v, 
+                    ack:true, 
+                    ts: Date.now(),
+                },  function(err) {1
+                    callb(null);
+                });
+            });
+        }, function(err) {
+            adapter.log.info("KM200 finished states creation "+ objToString(Object.keys(states)) );
+        });
+}
+
 function main() {
 
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
     if (mtimeout) clearTimeout(mtimeout);
 
-    adapter.log.info('config KM200 Addresse: ' + adapter.config.adresse);
-    adapter.log.info('config KM200 Addresse: ' + adapter.config.port);
-    adapter.log.info('config KM200 Addresse: ' + adapter.config.accesskey);
-    adapter.log.info('config KM200 Addresse: ' + adapter.config.blacklist);
-    adapter.log.info('config KM200 Addresse: ' + adapter.config.interval);
+    if(parseInt(adapter.config.interval)<10)  
+        adapter.config.interval = 10;
+    adapter.config.port = parseInt(adapter.config.port);
+    if (!adapter.config.adresse || adapter.config.adresse.length<2)
+        adapter.log.warn('config KM200 Addresse not available or too short: ' + adapter.config.adresse);
+    else    
+        adapter.log.info('config KM200 Addresse: ' + adapter.config.adresse);
+
+    adapter.log.info('config KM200 Port: ' + adapter.config.port);
+    adapter.log.info('config KM200 AccessKey: ' + adapter.config.accesskey);
+    adapter.log.info('config KM200 Black/Push-list: ' + adapter.config.blacklist);
+    adapter.log.info('config KM200 Interval: ' + adapter.config.interval);
 
     km200.init(adapter.config.adresse,adapter.config.port,adapter.config.accesskey);
 
@@ -278,68 +389,15 @@ function main() {
         adapter.log.warn("KM200: invalid blacklist:'"+adapter.config.blacklist+"'");
 
     km200.getServices(function(err,obj){
-        var s = Object.keys(km200.services);
-        if(s.length === 0) {
-            return adapter.log.error("Didi not get any Services from KLM200!: "+ objToString(km200.services));
+
+        if(!obj || Object.keys(obj) === 0) {
+            return adapter.log.error("Did not get any Services from KLM200!: "+ objToString(obj));
         }
-        for(var i in km200.services) {
-//                        adapter.log.info(i);
-
-//            adapter.log.info(i+" = "+km200.services[i]);
-        }
-
+        var fs = require('fs');
+        fs.writeFile("Services.txt",util.inspect(obj,false,4,false));
+        createStates();
+//        updateServices();
+        adapter.log.info("Services: "+ objToString(obj));
     });
-/*
-        async.forEachOfSeries(myKM200.names,function(o,n,callb)  {
-
-            var t =     o.type;
-            var c = {
-                type: 'state',
-                common: {
-                    name:   o.lname,
-                    type:   'boolean',
-                    unit:   o.unit,
-                    read:   true,
-                    write:  true,
-                    role:   'switch'
-                },
-                native : {
-                    desc:       JSON.stringify(o),
-                    isSensor:   (o["state"] !==undefined),
-                    xs1Id:      o.id
-                }
-            };
-
-            var r = myXS1.getRole(t);
-            if (r) {
-                c.common.role =r;
-                c.common.type = myXS1.getType(t);
-                if (c.common.type === 'boolean') {
-                    o.val = (o.val === false || o.val === 0) ? false : !!o.val;
-                    c.common.unit = "";
-                }
-                o.common = c.common;
-                c.native.init = o;
-                adapter.setObject(c.common.name,c,function(err) {
-                    adapter.log.info(c.common.name+" "+ objToString(c));
-                    adapter.setState(c.common.name, { 
-                        val:c.native.init.val, 
-                        ack:true, 
-                        ts:c.native.init.utime*1000
-                    },  function(err) {
-                        callb(null);
-                    });
-                });
-            } else {
-                adapter.log.warn("Undefined type "+t + ' for ' + c.common.name);
-                callb(null);
-            }
-        }, function(err) {
-            adapter.log.info("finished states creation");
-            adapter.subscribeStates('*'); // subscribe to states only now
-        });
-
-    });
-*/  
 
 }
