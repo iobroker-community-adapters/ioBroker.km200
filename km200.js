@@ -294,6 +294,13 @@ var mtimeout = null;
 
 var states = {};
 
+function minutes(min) {
+        var val = min*1000*60;
+        var d = Math.floor(val /(1000*60.0*60*24));
+        return (d>0 ? d.toString()+"-" : "" ) + new Date(val).toUTCString().split(" ")[4].slice(0,5);
+        
+}
+
 function createStates() {
         states = {};
 // I got Types:{ floatValue: 89, stringValue: 36, switchProgram: 4, systeminfo: 3, errorList: 1, yRecording: 8, arrayData: 5 }
@@ -329,7 +336,10 @@ function createStates() {
                     t = 'string';
                     break;
             }
-                
+            if (u=='mins') {
+                t = 'string';
+                v = minutes(parseInt(v));
+            }
             var c = {
                 type: 'state',
                 common: {
@@ -358,6 +368,14 @@ function createStates() {
         }, function(err) {
             adapter.log.info("KM200 finished states creation "+ objToString(Object.keys(states)) );
         });
+}
+
+function updateStates() {
+    if (mtimeout) clearTimeout(mtimeout);
+    mtimeout = null;
+    adapter.log.info('Update states from KM200');
+    // here comes the TODO: work!
+    mtimeout = setTimeout(updateStates,adapter.config.interval*1000*60);
 }
 
 function main() {
@@ -396,7 +414,7 @@ function main() {
         var fs = require('fs');
         fs.writeFile("Services.txt",util.inspect(obj,false,4,false));
         createStates();
-//        updateServices();
+        setTimeout(updateStates,adapter.config.interval*1000*60);
         adapter.log.info("Services: "+ objToString(obj));
     });
 
