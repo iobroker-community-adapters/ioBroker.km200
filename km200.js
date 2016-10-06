@@ -76,7 +76,7 @@ function KM200() {
                     'Accept': 'application/json',
                 }
             });
-        adapter.log.info("KM200 init("+accessUrl+', '+accessPort+', '+accessKey+') done!');
+//        adapter.log.info("KM200 init("+accessUrl+', '+accessPort+', '+accessKey+') done!');
     };
 
 
@@ -120,12 +120,12 @@ function KM200() {
         if (!callback) 
             return adapter.log.warn('KM200.get without callback parameter! Will not work!');
         if (!service || service.length<2 || service[0]!=='/') {
-            var e = "KM200.get service parameter not as requested '"+service+"'";
+            var e = "KM200.get service parameter not as requested '"+objToString(service)+"'";
             adapter.log.warn(e);
             return callback(e);
         }
         if (!that.crypt || !that.options) {
-            var err = "KM200.get not initialized! Will not work"+service+"'";
+            var err = "KM200.get not initialized! Will not work"+objToString(service)+"'";
             adapter.log.warn(err);
             return callback(err);
         }
@@ -211,7 +211,7 @@ function KM200() {
                         }
                     } else if (!isBlocked(item)) {
                         if (data.setpointProperty)
-                            nlist.push(data.setpointProperty);
+                            nlist.push(data.setpointProperty.id);
                         if (data.recordedResource)
                             nlist.push(data.recordedResource.id);
                         var objl = item.split('/');
@@ -244,10 +244,15 @@ function KM200() {
 
 var km200 = new KM200();
 
+var mtimeout = null;
+
+
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
     try {
         adapter.log.info('cleaned everything up...');
+        if (mtimeout)
+            clearTimeout(mtimeout);
         callback();
     } catch (e) {
         callback();
@@ -290,8 +295,6 @@ adapter.on('ready', function () {
     main();
 });
 
-var mtimeout = null;
-
 var states = {};
 
 function minutes(min) {
@@ -313,6 +316,7 @@ function createStates() {
             var t = o.type;
             var u = o.unitOfMeasure;
             var v = o.value;
+            o.valIs = "value";
             if (v == -3276.8)
                 return callb(null);
             var w = !!o.writeable;
@@ -330,11 +334,15 @@ function createStates() {
                 case 'errorList':
                 case 'arrayData':
                     v = o.values;
+                    o.valIs = "values";
                     t = 'array';
                     break;
-                default:
-                    t = 'string';
-                    break;
+                case 'switchProgram':
+                    v = o.switchPoints;
+                    o.valIs = "switchPoints";
+                    t = 'array';
+                default:        // don't process others'
+                    return callb(null);
             }
             if (u=='mins') {
                 t = 'string';
@@ -351,9 +359,13 @@ function createStates() {
                     role:   r,
                 },
                 native : {
-                    km200: o
                }
             };
+            if (typeof o.minValue !== 'undefined')
+                c.common.min = o.minValue;
+            if (typeof o.maxValue !== 'undefined')
+                c.common.max = o.maxValue;
+            c.native.km200 = o;
             states[n]=c;
             adapter.setObject(n,c,function(err) {
                 adapter.log.info(n+" "+ objToString(c));
@@ -361,19 +373,40 @@ function createStates() {
                     val:v, 
                     ack:true, 
                     ts: Date.now(),
-                },  function(err) {1
+                },  function(err) {
                     callb(null);
                 });
             });
         }, function(err) {
-            adapter.log.info("KM200 finished states creation "+ objToString(Object.keys(states)) );
+            var st = Object.keys(states)
+            adapter.log.info("KM200 finished creation of "+ st.length + " states: "+ objToString(st));
+//            adapter.subscribeStates('*'); // subscribe to states only now, but after we managed to write the TODO:
         });
 }
 
 function updateStates() {
     if (mtimeout) clearTimeout(mtimeout);
     mtimeout = null;
-    adapter.log.info('Update states from KM200');
+    async.forEachOfSeries(states,function(o,n,callb)  {
+        var km = o.native.km200;
+        km200.get(km.id, function (err,data){
+            if (err)    // just skip at the moment
+                return callb(null);
+            var val = data[km.valIs];
+            if (km.unitOfMeasure=='mins')
+                val = minutes(parseInt(val));
+            adapter.setState(n, { 
+                val:val, 
+                ack:true, 
+                ts: Date.now(),
+            },  function(err) {
+                adapter.log.info("Updated '"+n+"' = "+objToString(val));
+                setTimeout(callb,100,null); // delay next request by 100ms to give the network a time :)
+            });
+        });
+    }, function (err) {
+            adapter.log.info('Updated values for states from KM200!');
+    }); 
     // here comes the TODO: work!
     mtimeout = setTimeout(updateStates,adapter.config.interval*1000*60);
 }
@@ -384,18 +417,18 @@ function main() {
     // adapter.config:
     if (mtimeout) clearTimeout(mtimeout);
 
-    if(parseInt(adapter.config.interval)<10)  
-        adapter.config.interval = 10;
+    if(parseInt(adapter.config.interval)<5)  
+        adapter.config.interval = 5;
     adapter.config.port = parseInt(adapter.config.port);
     if (!adapter.config.adresse || adapter.config.adresse.length<2)
         adapter.log.warn('config KM200 Addresse not available or too short: ' + adapter.config.adresse);
-    else    
-        adapter.log.info('config KM200 Addresse: ' + adapter.config.adresse);
+    
+    adapter.config.accesskey = adapter.config.accesskey.trim();
+    if (!adapter.config.accesskey || adapter.config.accesskey.length!=64)
+        adapter.log.warn('config KM200 AccessKey seems to be invalid (need to be a hex string of 64 characters): ' + objToString(adapter.config.accesskey));
 
-    adapter.log.info('config KM200 Port: ' + adapter.config.port);
-    adapter.log.info('config KM200 AccessKey: ' + adapter.config.accesskey);
-    adapter.log.info('config KM200 Black/Push-list: ' + adapter.config.blacklist);
-    adapter.log.info('config KM200 Interval: ' + adapter.config.interval);
+    adapter.log.info('KM200 adresse: http://' +  adapter.config.adresse + ':' + adapter.config.port);
+    adapter.log.info('Interval='+adapter.config.interval+', Black/Push-list: ' + adapter.config.blacklist);
 
     km200.init(adapter.config.adresse,adapter.config.port,adapter.config.accesskey);
 
@@ -411,11 +444,11 @@ function main() {
         if(!obj || Object.keys(obj) === 0) {
             return adapter.log.error("Did not get any Services from KLM200!: "+ objToString(obj));
         }
-        var fs = require('fs');
-        fs.writeFile("Services.txt",util.inspect(obj,false,4,false));
+//        var fs = require('fs');
+//        fs.writeFile("Services.txt",util.inspect(obj,false,4,false));
         createStates();
-        setTimeout(updateStates,adapter.config.interval*1000*60);
-        adapter.log.info("Services: "+ objToString(obj));
+        mtimeout = setTimeout(updateStates,adapter.config.interval*1000*60);
+//        adapter.log.info("Services: "+ objToString(obj));
     });
 
 }
