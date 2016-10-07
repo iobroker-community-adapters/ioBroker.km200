@@ -10,12 +10,9 @@
   Nun hab ich in einem Forum gelesen dass FHEM und SYMCON dafür Treiber/adapter anbieten. 
   Diese sind jedoch in Perl und PHP geschrieben die ich beide überhaupt nicht kann. 
   Habe mir den sourcecode trotzdem angeschaut und versucht zu analysieren und mit node.js
-  herumgespielt ob ich auch eine Kommunikation ohne Fehler hinkriege.
+  herumgespielt ob ich auch eine verschlüsselte Kommunikation ohne Fehler hinkriege.
 
-  Das ist mir jetzt gelungen und ich hab das ganze in diesem Adapter verbaut.
-
-  Momentan ist er nur 'read-only' was bedeutet man kann noch keine Daten zur Heizung schicken 
-  (also z.B. die gewünschte Temperatur ändern), das steht in der TODO-Liste ganz oben.
+  Das ist jetzt in beide Richtungen gelungen und der Adapter ist jetzt schon voll verwendbar.
 
   Das System brauch einen Access-Key um die Daten ver- und entschlüsseln zu können.
   Leider mußte der Code zur Generierung des Schlüssels wege Urheberrechtlichen Gründen vom Netz genommen werden 
@@ -40,14 +37,19 @@
   Die Syntax ist dass "/irgendwas*" oder "-/irgendwas*" alles ausblendet fas mit "/irgendwas" beginnt und dann beliebige Zeichen (oder nichts) dran hat.
   Mit "+.*temp*" kann man alles einblenden was 'temp' enthält, und das hat Vorrang gegenüber dem Ausblened!
 
-  Meile Liste schaut so aus `["/gateway*","/recordings*",".*switchPrograms.*","/heatSource*"]` und blendet ca 100 der ~150 Datensätze meiner Anlage aus.
+  Meile Liste schaut so aus `["/gateway*","/recordings*",".*switchPrograms.*","/heatSource*",".*holidayModes.*"]` und blendet ca 90 der ~150 Datensätze meiner Anlage aus.
 
-  Die Anlage arbeitet Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
+  Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
 
 ## Changelog
 
+### 0.3.0
+  Setzen von Variablen mit Zahlen oder Strings funktioniert nun. 
+  Damit können z.B. Soll-Temperaturen verändert werden. 
+  TODO: Enums und setzen von Tabellen
+
 ### 0.2.0
-  Adapter functioniert jetzt mit Blacklist und im Read-Only mode.
+  Adapter funktioniert jetzt mit Blacklist und im Read-Only mode.
   TODO: Setzen von Werten im Heizsystem implementieren
   TODO: Variablen mit ENUMS (Wertelisten) implementieren
 

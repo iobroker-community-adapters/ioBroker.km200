@@ -169,6 +169,38 @@ function KM200() {
         }).on('error',callback);
     };
 
+    that.set = function(service,value,callback) {
+        var text = {};
+        text.value = value;
+        text = JSON.stringify(text);
+        var bs = that.crypt.getBlockSize();
+        text = that.crypt.encrypt(text).toString('base64');
+        var opt = safeJson(that.options);
+        opt.headers["Content-Type"] = "application/json";
+        opt.path = service;
+        opt.method = 'POST';
+//        opt.headers['Content-Length'] = Buffer.byteLength(text);
+        var data = new Buffer('');
+        var req = http.request(opt, function(res) {
+            res.setEncoding('utf8');
+            res.on('data', function(chunk) {
+                data += chunk;
+            });
+            res.on('end', function() {
+                res.removeAllListeners();
+                callback(null,data);
+            });
+        });
+        
+        req.on('error', function(e){
+          adapter.log.warn('On Error: problem with request: ' +e.message);
+          req.removeAllListeners();
+          callback(e,null);
+        });
+        // write data to request body
+        req.end(text);
+    };
+
     function isBlocked(id) {
         for (var i=0;i<that.pushed.length;++i) {
             if(that.pushed[i].test(id)) {
@@ -246,6 +278,8 @@ var km200 = new KM200();
 
 var mtimeout = null;
 
+var setDel = {};
+
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -267,12 +301,32 @@ adapter.on('objectChange', function (id, obj) {
 
 // is called if a subscribed state changes
 adapter.on('stateChange', function (id, state) {
+    if (setDel[id])
+        clearTimeout(setDel[id]);
+    setDel[id] = null;
     // Warning, state can be null if it was deleted
-    adapter.log.info('stateChange ' + id + ' ' + objToString(state));
+//    adapter.log.info(adapter.instance + ' stateChange ' + id + ' ' + objToString(state));
 
     // you can use the ack flag to detect if it is status (true) or command (false)
-    if (state && !state.ack) {
-        // TODO: set value on KM200
+    if (state && !state.ack && !state['from'].endsWith('km200.'+adapter.instance)) {
+//        adapter.log.info(id+' stateChange to '+ objToString(state));
+        var serv = '/'+id.split('.').slice(2).join('/');
+//        adapter.log.info("km200.set "+serv+" = "+state.val);
+        km200.set(serv, state.val, function(err,data) {
+            if(err)
+                adapter.log.warn('Set KM200 err: '+ objToString(err));
+            else {
+                adapter.log.info("Set "+id+ " to " + state.val);
+//                adapter.log.info('KM200.set '+serv + " changed to "+state.val);
+                var ids = id.split('.').slice(2).join('.');
+                var ite = {};
+                ite[ids] = states[ids];
+                if (setDel[id])
+                    clearTimeout(setDel[id]);
+//                adapter.log.info('Set KM200 returned: '+ objToString(ite));
+                setDel[id] = setTimeout(updateStates,5000,id);
+            }
+        });
     }
 });
 
@@ -327,6 +381,9 @@ function createStates() {
             } else if(typeof u === 'undefined)')
                 u = "";
             switch(t) {
+                case 'stringValue':
+                    t = 'string';
+                    break;
                 case 'floatValue':
                     t = 'number';
                     break;
@@ -336,11 +393,13 @@ function createStates() {
                     v = o.values;
                     o.valIs = "values";
                     t = 'array';
+                    w = false;
                     break;
                 case 'switchProgram':
                     v = o.switchPoints;
                     o.valIs = "switchPoints";
                     t = 'array';
+                    w = false;
                 default:        // don't process others'
                     return callb(null);
             }
@@ -380,14 +439,31 @@ function createStates() {
         }, function(err) {
             var st = Object.keys(states)
             adapter.log.info("KM200 finished creation of "+ st.length + " states: "+ objToString(st));
-//            adapter.subscribeStates('*'); // subscribe to states only now, but after we managed to write the TODO:
+            adapter.subscribeStates('*'); // subscribe to states only now, but after we managed to write the TODO:
         });
 }
 
-function updateStates() {
+function updateStates(items) {
+//    adapter.log.info("updateStates Tried to update "+objToString(items));
     if (mtimeout) clearTimeout(mtimeout);
     mtimeout = null;
-    async.forEachOfSeries(states,function(o,n,callb)  {
+    if (typeof items === 'string') {
+        var ai = adapter.name + '.' + adapter.instance +'.';
+        if (items.startsWith(ai))
+            items = items.slice(ai.length,items.length);
+        if (setDel[items]) {
+            clearTimeout(setDel[items]);
+            setDel[items] = null;
+        }    
+        var ni = {};
+        ni[items]= states[items];
+        if (!states[items]) {
+            return adapter.log.info('Could not find state for '+ items);
+        } else adapter.log.info('Update '+ objToString(ni));
+        items = ni;
+    } else if(!items)
+        items = states 
+    async.forEachOfSeries(items,function(o,n,callb)  {
         var km = o.native.km200;
         km200.get(km.id, function (err,data){
             if (err)    // just skip at the moment
@@ -405,9 +481,9 @@ function updateStates() {
             });
         });
     }, function (err) {
-            adapter.log.info('Updated values for states from KM200!');
+        if (err)
+            adapter.log.warn('UpdateStates returned Error: '+objToString(err));
     }); 
-    // here comes the TODO: work!
     mtimeout = setTimeout(updateStates,adapter.config.interval*1000*60);
 }
 
