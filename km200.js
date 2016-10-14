@@ -1,7 +1,7 @@
 /**
  *
  * Buderus KM200 Adapter
- *
+ * v 0.4.0 2016.10.14
  */
 
 /* jshint -W097 */// jshint strict:false
@@ -280,6 +280,8 @@ var mtimeout = null;
 
 var setDel = {};
 
+var states = {};
+
 
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
@@ -308,11 +310,21 @@ adapter.on('stateChange', function (id, state) {
 //    adapter.log.info(adapter.instance + ' stateChange ' + id + ' ' + objToString(state));
 
     // you can use the ack flag to detect if it is status (true) or command (false)
-    if (state && !state.ack && !state['from'].endsWith('km200.'+adapter.instance)) {
+    if (state && !state.ack && !(state['from'] && state['from'].endsWith('km200.'+adapter.instance))) {
 //        adapter.log.info(id+' stateChange to '+ objToString(state));
-        var serv = '/'+id.split('.').slice(2).join('/');
+        var iid = id.split('.').slice(2);
+        var serv = '/'+iid.join('/');
+        iid = iid.join('.');
 //        adapter.log.info("km200.set "+serv+" = "+state.val);
-        km200.set(serv, state.val, function(err,data) {
+        var val = state.val;
+        iid = states[iid];
+        if (iid && iid.common.states) { // convert states in ioBroker to allowed string values for KM200
+            var sa = iid.common.states.split(';');
+            val = sa[state.val].split(':')[1];
+//            adapter.log.info('Check Converted for '+iid+' State '+objToString(iid) + ' to ' + val);
+        } 
+
+        km200.set(serv, val, function(err,data) {
             if(err)
                 adapter.log.warn('Set KM200 err: '+ objToString(err));
             else {
@@ -349,8 +361,6 @@ adapter.on('ready', function () {
     main();
 });
 
-var states = {};
-
 function minutes(min) {
         var val = min*1000*60;
         var d = Math.floor(val /(1000*60.0*60*24));
@@ -375,6 +385,7 @@ function createStates() {
                 return callb(null);
             var w = !!o.writeable;
             var r =  w ? 'level' : 'value';
+            var s = false;
             if (u === 'C') {
                 u = '°C';
                 r += '.temperature';
@@ -382,7 +393,16 @@ function createStates() {
                 u = "";
             switch(t) {
                 case 'stringValue':
-                    t = 'string';
+                    if (Array.isArray(o.allowedValues)) {
+                        o.valIs = 'states';
+                        t = 'number';
+                        v = o.allowedValues.indexOf(o.value);
+                        s = [];
+                        for(var ii =0; ii<o.allowedValues.length; ++ii) 
+                            s.push(ii.toString() + ':'+ o.allowedValues[ii]);
+                        s = s.join(';');
+                    }  else
+                        t = 'string';
                     break;
                 case 'floatValue':
                     t = 'number';
@@ -420,6 +440,11 @@ function createStates() {
                 native : {
                }
             };
+            if (s) {
+                c.common.states = s;
+                c.common.min = 0;
+                c.common.max = o.allowedValues.length-1;
+            }
             if (typeof o.minValue !== 'undefined')
                 c.common.min = o.minValue;
             if (typeof o.maxValue !== 'undefined')
@@ -468,7 +493,12 @@ function updateStates(items) {
         km200.get(km.id, function (err,data){
             if (err)    // just skip at the moment
                 return callb(null);
-            var val = data[km.valIs];
+            var val = null;
+            if (km.valIs==='states') {
+//                adapter.log.info("states:Data = "+objToString(data) +' = '+objToString(km));
+                val = data.allowedValues.indexOf(data.value);
+            } else
+                val = data[km.valIs];
             if (km.unitOfMeasure=='mins')
                 val = minutes(parseInt(val));
             adapter.setState(n, { 
@@ -524,7 +554,7 @@ function main() {
 //        fs.writeFile("Services.txt",util.inspect(obj,false,4,false));
         createStates();
         mtimeout = setTimeout(updateStates,adapter.config.interval*1000*60);
-//        adapter.log.info("Services: "+ objToString(obj));
+        adapter.log.info("Services generated "+ Object.keys(obj));
     });
 
 }

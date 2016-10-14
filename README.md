@@ -43,6 +43,9 @@
 
 ## Changelog
 
+### 0.4.0
+  Strings mit allowedValues werden jetzt in beide Richtungen (Lesen & Schreiben) in ioBroker states umgewandelt
+
 ### 0.3.0
   Setzen von Variablen mit Zahlen oder Strings funktioniert nun. 
   Damit können z.B. Soll-Temperaturen verändert werden. 
