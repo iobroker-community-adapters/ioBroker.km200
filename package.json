@@ -27,7 +27,8 @@
   },
   "dependencies": {
     "async": "^2.0.1",
-    "mcrypt": "^0.1.11"
+    "mcrypt": "^0.1.11",
+    "request": "^2.75.0"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
