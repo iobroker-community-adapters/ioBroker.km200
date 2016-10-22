@@ -43,6 +43,9 @@
 
 ## Changelog
 
+### 0.4.1
+  Habe nur 'request' und 'async' mit --save nun auch ins package.json eingetragen... Merken: Nuícht --save vergessen :(!
+
 ### 0.4.0
   Strings mit allowedValues werden jetzt in beide Richtungen (Lesen & Schreiben) in ioBroker states umgewandelt
 
