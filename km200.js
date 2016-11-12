@@ -1,7 +1,7 @@
 /**
  *
  * Buderus KM200 Adapter
- * v 0.4.0 2016.10.14
+ * v 0.4.2 2016.11.14
  */
 
 /* jshint -W097 */// jshint strict:false
