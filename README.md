@@ -42,6 +42,8 @@
   Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
 
 ## Changelog
+### 0.4.2
+* Some Small bug fixes and added some debug logs. Removed also dependency of 'request' and 'async' modules.
 
 ### 0.4.1
   Habe nur 'request' und 'async' mit --save nun auch ins package.json eingetragen... Merken: Nuícht --save vergessen :(!
