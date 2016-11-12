@@ -1,6 +1,6 @@
 {
   "name": "iobroker.km200",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "ioBroker Buderus KM200 Adapter",
   "author": {
     "name": "Frank Joke",
@@ -26,9 +26,7 @@
     "url": "https://github.com/frankjoke/ioBroker.km200"
   },
   "dependencies": {
-    "async": "^2.0.1",
-    "mcrypt": "^0.1.11",
-    "request": "^2.75.0"
+    "mcrypt": "^0.1.11"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
