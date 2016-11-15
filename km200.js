@@ -490,7 +490,8 @@ function createStates() {
     },10).then(() => {
         const st = Object.keys(states)
         _I(`KM200 finished creation of ${st.length} states: ${_o(st)}`);
-        adapter.subscribeStates('*'); // subscribe to states only now, but after we managed to write the TODO:
+         // subscribe to states only now, but after we managed to write the TODO:
+        return Promise.resolve(adapter.subscribeStates('*'));
     });
 }
 
@@ -535,6 +536,7 @@ function updateStates(items) {
     },50);
 }
 
+var ain = '';
 function main() {
 
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
@@ -551,7 +553,9 @@ function main() {
         return _W(`config KM200 AccessKey seems to be invalid (need to be a hex string of 64 characters): 
             ${_o(adapter.config.accesskey)}`);
 
-    _I(`KM200 adresse: http://${adapter.config.adresse}:${adapter.config.port}`);
+    ain = adapter.name + '.' + adapter.instance + '.';
+
+    _I(`${ain} address: http://${adapter.config.adresse}:${adapter.config.port}`);
     _I(`Interval=${adapter.config.interval}, Black/Push-list: ${adapter.config.blacklist}`);
 
     km200.init(adapter.config.adresse,adapter.config.port,adapter.config.accesskey);
@@ -575,6 +579,15 @@ function main() {
         })
 //        .then(() => wait(10000))
 //        .then(() => updateStates())
-        .then(() => mtimeout = setInterval(updateStates,adapter.config.interval*1000*60));
+        .then(res => c2pP(adapter.objects.getObjectList)({startkey: _D(ain), endkey: ain + '\u9999'})
+        ).then(res => pSeriesP(res.rows, item => {  // clean all states which are not part of the list
+            if (states[item.id.slice(ain.length)]) 
+                return Promise.resolve();
+            return c2pP(adapter.deleteState)(item.id)
+                .then(x => _D(`Del State: ${item.id}`), err => null) ///TC
+                .then(y => c2pP(adapter.delObject)(item.id))
+                .then(x => _D(`Del Object: ${item.id}`), err => null) ///TC
+            },10)
+        ).then(() => mtimeout = setInterval(updateStates,adapter.config.interval*1000*60));
 
 }

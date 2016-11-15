@@ -42,6 +42,10 @@
   Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
 
 ## Changelog
+
+### 0.4.3
+* Cleaning of objects/states for current adapter instance which are not part of scanned services anymore.
+
 ### 0.4.2
 * Some Small bug fixes and added some debug logs. Removed also dependency of 'request' and 'async' modules.
 
