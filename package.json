@@ -1,6 +1,6 @@
 {
   "name": "iobroker.km200",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "ioBroker Buderus KM200 Adapter",
   "author": {
     "name": "Frank Joke",
