@@ -573,7 +573,8 @@ function main() {
             if(!obj || Object.keys(obj).length === 0) {
                 adapter.log.error(`Did not get any Services from KLM200!: ${_o(obj)}, will stop adapter.`);
 //                adapter.stop();
-                process.exit();
+//                process.exit();
+                return Promise.rej('Did not get any Services from KLM200!')
             } 
             _I(`Services found: ${Object.keys(obj).length}`);
             return createStates();
