@@ -9,7 +9,7 @@ node_js:
 before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install mcrypt; fi'
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CC=clang++; export CXX=clang++; export CXXFLAGS=-std=c++11; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CC=clang; export CXX=clang; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX=g++-4.8; fi
 before_script:
   - npm install winston@2.3.0
