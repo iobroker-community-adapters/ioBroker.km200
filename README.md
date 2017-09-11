@@ -52,6 +52,9 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
 ## Changelog
 
 ### 0.4.3
+* Renamed repository to ioBroker.km200
+
+### 0.4.3
 * Cleaning of objects/states for current adapter instance which are not part of scanned services anymore.
 
 ### 0.4.2

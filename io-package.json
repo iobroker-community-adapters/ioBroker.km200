@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "km200",
-        "version":                  "0.4.3",
+        "version":                  "1.0.0",
         "title":                    "Buderus KM200 adapter",
         "desc":                     {
  			             "en": "ioBroker Buderus KM200 Adapter",
