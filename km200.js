@@ -3,11 +3,8 @@
  * Buderus KM200 Adapter
  * v 0.4.2 2016.11.14
  */
-
-/* jshint -W097 */// jshint strict:false
-/*jslint node: true */
+// jshint node:true, esversion:6, strict:global, undef:true, unused:true
 "use strict";
-
 const util =          require('util');
 const http =          require('http');
 const MCrypt =        require('mcrypt').MCrypt;

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.km200",
-  "version": "0.4.3",
+  "version": "1.0.1",
   "description": "ioBroker Buderus KM200 Adapter",
   "author": {
     "name": "Frank Joke",
@@ -39,7 +39,7 @@
     "nan": "2.4.0"
   },
   "bugs": {
-    "url": "https://github.com/ioBroker/ioBroker.km200/issues"
+    "url": "https://github.com/frankjoke/ioBroker.km200/issues"
   },
   "main": "km200.js",
   "readmeFilename": "README.md",
