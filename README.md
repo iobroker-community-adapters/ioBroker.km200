@@ -49,6 +49,9 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
 
   Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
 
+## Important/Wichtig
+* Adapter requires node >= v4.3.*!
+
 ## Changelog
 
 ### 0.4.3
