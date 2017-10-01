@@ -1,6 +1,6 @@
 {
   "name": "iobroker.km200",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "ioBroker Buderus KM200 Adapter",
   "author": {
     "name": "Frank Joke",
@@ -21,6 +21,9 @@
     "Smart Home",
     "home automation"
   ],
+  "engines": {
+    "node": ">=4.3.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/frankjoke/ioBroker.km200"
