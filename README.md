@@ -53,6 +53,10 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
 * Adapter requires node >= v4.3.*!
 
 ## Changelog
+### 1.1.1
+* Adapter handles better communication and retries if he got an error.
+* you can set debug-mode by adding 'debug!' in front of host.
+* Host port is not required and can be added to hostname with :xxx at end.
 
 ### 0.4.3
 * Renamed repository to ioBroker.km200

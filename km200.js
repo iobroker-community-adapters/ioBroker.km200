@@ -1,12 +1,12 @@
 /**
  *
  * Buderus KM200 Adapter
- * v 0.4.2 2016.11.14
+ * v 1.1.1 2017.10.03
  */
-// jshint node:true, esversion:6, strict:true, undef:true, unused:true
+/*jshint -W030*/
+//// jxshint node:true, esversion:6, strict:true, undef:true, unused:true
 "use strict";
-const http = require('http'),
-    MCrypt = require('mcrypt').MCrypt,
+const MCrypt = require('mcrypt').MCrypt,
     utils = require(__dirname + '/lib/utils'), // Get common adapter utils
     adapter = utils.adapter('km200'),
     //	assert = require('assert'),
@@ -41,9 +41,9 @@ class KM200 {
      *  accessKey = hex string like 'b742c3085bcaeac989353b7655c016dda46e567fe6e8a609e8ea796e20a78a33' which you got from https://ssl-account.com/km200.andreashahn.info/
      *  pollTime = in wie vielen Minuten werden 
      */
-    init(accessUrl, accessPort, accessKey) {
+    init(accessUrl,  accessKey) {
         if (!accessUrl || !accessKey)
-            return A.W(`KM200.init argument error:init(${accessUrl}, ${accessPort}, ${accessKey}), no init done!`);
+            return A.W(`KM200.init argument error:init(${accessUrl},  ${accessKey}), no init done!`);
         this.aesKey = new Buffer(accessKey, 'hex');
         this.scannedServices = null;
         this.blocked = [];
@@ -51,14 +51,22 @@ class KM200 {
         this.crypt.open(this.aesKey);
         this.options = {
             hostname: accessUrl,
-            port: accessPort && parseInt(accessPort) > 0 ? parseInt(accessPort) : 80,
+            timeout: 10000,
+            status: [200],
+            encoding: 'utf8',
+            port: 80,
             headers: {
                 'agent': 'TeleHeater/2.2.3',
                 'User-Agent': 'TeleHeater/2.2.3',
                 'Accept': 'application/json',
             }
         };
-        A.D(`KM200 init(${accessUrl}, ${accessPort}, ${accessKey}) done!`);
+        if (accessUrl.indexOf(':') > 1) {
+            let au = A.trim(A.split(accessUrl, ':'));
+            this.options.hostname = accessUrl = au[0];
+            this.options.port = au[1];
+        }
+        A.D(`KM200 init(${accessUrl}, ${accessKey}) done!`);
     }
 
 
@@ -98,82 +106,50 @@ class KM200 {
      *  Get data from KM200
      *  service = string of service like '/system' to access
      *  callback(err,data) with received data, either an array or an object
+     *
      */
     get(service) {
         if (!service || service.length < 2 || service[0] !== '/')
             return Promise.reject(A.W(`KM200.get service parameter not as requested '${A.O(service)}'`));
         if (!this.crypt || !this.options)
             return Promise.reject(A.W(`KM200.get not initialized for decryption! Will not work ${A.O(service)}'`));
-        return A.retry(2, () => new Promise((res, rej) => {
-            let data = new Buffer('');
-            let resp = null;
-            const opt = A.clone(this.options);
-            opt.method = 'GET';
-            opt.path = service;
-            //        A.D(A.O(opt));
-            http.get(opt, response => {
-                response.setEncoding('utf8');
-                if (response.statusCode !== 200)
-                    return rej(A.D(`KM200.get  for ${service} Resp status not 200: ${response.statusCode}`));
-                resp = response;
-                resp.on('data', buf => data += buf)
-                    .on('error', err => {
-                        A.W(`KM200.get Error  for ${service} from response: ${A.O(err)}`);
-                        data = null;
-                        rej(err);
-                    }).on('end', () => {
-                        if (!data)
-                            return rej(`No Data for ${service}!`);
-                        const b = new Buffer(data, 'base64');
-                        let o = null;
-                        try {
-                            let s = b.toString('hex');
-                            //                        A.D('fh'+s);
-                            s = this.crypt.decrypt(b).toString('utf8');
-                            while (s.charCodeAt(s.length - 1) === 0)
-                                s = s.slice(0, s.length - 1);
-                            o = JSON.parse(s);
-                        } catch (e) {
-                            return rej(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e,3)}`);
-                        }
-                        if (o && o.references)
-                            o = o.references;
-                        res(o);
-                    });
-            }).on('error', rej);
-        }));
+        const opt = A.clone(this.options);
+        opt.method = 'GET';
+        opt.path = service;
+        opt.status = [200,403];
+        return A.retry(1, () => A.request(opt)
+            .then(data => {
+                if (!data)
+                    return Promise.reject(`No Data for ${service}!`);
+                const b = new Buffer(data, 'base64');
+                let o = null;
+                try {
+                    let s = b.toString('hex');
+                    //                        A.D('fh'+s);
+                    s = this.crypt.decrypt(b).toString('utf8');
+                    while (s.charCodeAt(s.length - 1) === 0)
+                        s = s.slice(0, s.length - 1);
+                    o = A.J(s);
+                } catch (e) {
+                    return Promise.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e,3)}`);
+                }
+                if (o && o.references)
+                    o = o.references;
+                return o;
+            }, err => err.indexOf('status 403/')> 0 ? Promise.resolve() : Promise.reject(err)));
+        //        A.D(A.O(opt));
     }
-
     set(service, value) {
-        return new Promise((res, rej) => {
-            let text = JSON.stringify({value: value});
-            //            const bs = this.crypt.getBlockSize();
-            text = this.crypt.encrypt(text).toString('base64');
-            const opt = A.clone(this.options);
-            opt.headers["Content-Type"] = "application/json";
-            opt.path = service;
-            opt.method = 'POST';
-            //        opt.headers['Content-Length'] = Buffer.byteLength(text);
-            let data = new Buffer('');
-            const req = http.request(opt, function (res) {
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
-                    data += chunk;
-                });
-                res.on('end', function () {
-                    res.removeAllListeners();
-                    res(data);
-                });
-            });
 
-            req.on('error', function (e) {
-                A.W('On Error: problem with request: ' + e.message);
-                req.removeAllListeners();
-                rej(e);
-            });
-            // write data to request body
-            req.end(text);
-        });
+        const post = this.crypt.encrypt(JSON.stringify({
+            value: value
+        })).toString('base64');
+        const opt = A.clone(this.options);
+        opt.headers["Content-Type"] = "application/json";
+        opt.path = service;
+        opt.method = 'POST';
+        opt.status = [200, 204];
+        return A.request(opt, post);
     }
 
     isBlocked(id) {
@@ -200,6 +176,8 @@ class KM200 {
             return this.get(item)
                 .then(data => {
                     //                    A.D(`get returned ${A.O(data)}`)
+                    if (!data)
+                        return null;
                     if (Array.isArray(data)) {
                         return A.seriesOf(data, di => {
                             //                            A.D(`array had ${A.O(di)}`)
@@ -344,6 +322,7 @@ function createStates() {
             type: 'state',
             id: n,
             common: {
+                id: n,
                 name: n,
                 type: t,
                 unit: u,
@@ -364,7 +343,7 @@ function createStates() {
             c.common.max = o.maxValue;
         c.native.km200 = o;
         states[n] = c;
-        return A.makeState(c, v, true);
+        return A.makeState(c.common, v, true);
     }, 10).then(() => {
         const st = Object.keys(states);
         A.I(`KM200 finished creation of ${st.length} states: ${A.O(st)}`);
@@ -415,7 +394,6 @@ function main() {
 
     if (parseInt(adapter.config.interval) < 5)
         adapter.config.interval = 5;
-    adapter.config.port = parseInt(adapter.config.port);
     if ((A.debug = adapter.config.adresse.startsWith('debug!')))
         adapter.config.adresse = adapter.config.adresse.slice(A.D(`Debug mode on!`, 6)).trim();
 
@@ -429,10 +407,10 @@ function main() {
 
     ain = adapter.name + '.' + adapter.instance + '.';
 
-    A.I(`${ain} address: http://${adapter.config.adresse}:${adapter.config.port}`);
+    A.I(`${ain} address: http://${adapter.config.adresse}`);
     A.I(`Interval=${adapter.config.interval}, Black/Push-list: ${adapter.config.blacklist}`);
 
-    km200.init(adapter.config.adresse, adapter.config.port, adapter.config.accesskey);
+    km200.init(adapter.config.adresse, adapter.config.accesskey);
 
     var blacklist = A.J(adapter.config.blacklist);
 

@@ -1,7 +1,7 @@
 {
     "common": {
         "name":                     "km200",
-        "version":                  "1.1.0",
+        "version":                  "1.1.1",
         "title":                    "Buderus KM200 adapter",
         "desc":                     {
  			             "en": "ioBroker Buderus KM200 Adapter",
@@ -19,9 +19,14 @@
         "type":                     "hardware",
         "restartAdapters":          ["no_vis"]
     },
-    "native": {
+    "news": {
+        "1.1.1": {
+          "en": "Adapter handles better communication and retries if he got an error.",
+          "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
+        }
+      },
+      "native": {
         "adresse":"BuderusKM200.fritz.box",
-        "port":80,
         "blacklist": "[]",
         "interval": 15,
         "accesskey":"hexstring"

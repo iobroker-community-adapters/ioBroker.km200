@@ -3,12 +3,13 @@
  *      (c) 2016- <frankjoke@hotmail.com>
  *      MIT License
  */
-/*jshint -W089 */
+/*jshint -W089, -W030 */
 // jshint  node: true, esversion: 6, strict: true, undef: true, unused: true
 "use strict";
 const util = require('util'),
     http = require('http'),
     https = require('https'),
+    url = require('url'),
     exec = require('child_process').exec,
     assert = require('assert');
 
@@ -116,6 +117,10 @@ class MyAdapter {
 
     static J( /** string */ str, /** function */ reviewer) {
         let res;
+        if (!str)
+            return null;
+        if (this.T(str) !== 'string')
+            str = str.toString();
         try {
             res = JSON.parse(str, reviewer);
         } catch (e) {
@@ -231,9 +236,9 @@ class MyAdapter {
 
     static pTimeout(pr, time, callback) {
         let t = parseInt(time);
-        assert(typeof t === 'number' && t>0,`pTimeout requires a positive number as second argument for the ms`); 
+        assert(typeof t === 'number' && t > 0, `pTimeout requires a positive number as second argument for the ms`);
         let st = null;
-        assert(callback && typeof callback === 'function',`pTimeout requires optionally a function for callback as third argument`); 
+        assert(callback && typeof callback === 'function', `pTimeout requires optionally a function for callback as third argument`);
         return new Promise((resolve, reject) => {
             let rs = res => {
                     if (st) clearTimeout(st);
@@ -388,6 +393,80 @@ class MyAdapter {
                 }
                 resolve(stdout);
             });
+        });
+    }
+
+    static url(turl, opt) {
+        //        this.D(`mup start: ${this.O(turl)}: ${this.O(opt)}`);
+        if (this.T(turl) === 'string')
+            turl = url.parse(turl.trim(), true);
+        if (this.T(opt) === 'object')
+            for (var i of Object.keys(opt))
+                if (this.W(i, i) !== 'url') turl[i] = opt[i];
+        //        this.D(`mup ret: ${this.O(turl)}`);
+        return turl;
+    }
+
+    static request(opt, value, transform) {
+        if (this.T(opt) === 'string')
+            opt = this.url(opt.trim());
+        if (this.T(opt) !== 'object' && !(opt instanceof url.Url))
+            return Promise.reject(this.W(`Invalid opt or Url for request: ${this.O(opt)}`));
+        if (opt.url > '')
+            opt = this.urm(opt.url, opt);
+        if (opt.json)
+            if (opt.headers) opt.headers.Accept = 'application/json';
+            else opt.headers = {
+                Accept: 'application/json'
+            };
+        if (!opt.protocol)
+            opt.protocol = 'http:';
+        let fun = opt.protocol.startsWith('https') ? https.request : http.request;
+        //                this.D(`opt: ${this.O(opt)}`);
+        return new Promise((resolve, reject) => {
+            let data = new Buffer(''),
+                res;
+            const req = fun(opt, function (result) {
+                res = result;
+                //                MyAdapter.D(`status: ${MyAdapter.O(res.statusCode)}/${http.STATUS_CODES[res.statusCode]}`);
+                res.setEncoding(opt.encoding ? opt.encoding : 'utf8');
+                if (MyAdapter.T(opt.status) === 'array' && opt.status.indexOf(res.statusCode) < 0)
+                    return reject(MyAdapter.D(`request for ${url.format(opt)} had status ${res.statusCode}/${http.STATUS_CODES[res.statusCode]} other than supported ${opt.status}`));
+                res.on('data', chunk => data += chunk)
+                    .on('end', () => {
+                        res.removeAllListeners();
+                        req.removeAllListeners();
+                        if (MyAdapter.T(transform) === 'function')
+                            data = transform(data);
+                        if (opt.json) {
+                            try {
+                                return resolve(JSON.parse(data));
+                            } catch (e) {
+                                return err(`request JSON error ${MyAdapter.O(e)}`);
+                            }
+                        }
+                        return resolve(data);
+                    })
+                    .on('close', () => err(`Connection closed before data was received!`));
+            });
+
+            function err(e, msg) {
+                if (!msg)
+                    msg = e;
+                res && res.removeAllListeners();
+//                req && req.removeAllListeners();
+                req && !req.aborted && req.abort();
+//                res && res.destroy();
+                MyAdapter.D('err in response:' + msg);
+                return reject(msg);
+            }
+
+            if (opt.timeout)
+                req.setTimeout(opt.timeout, () => err('request timeout Error: ' + opt.timeout + 'ms'));
+            req.on('error', (e) => err('request Error: ' + MyAdapter.O(e)))
+                .on('aborted', (e) => err('request aborted: ' + MyAdapter.O(e)));
+            // write data to request body
+            return req.end(value, opt.encoding ? opt.encoding : 'utf8');
         });
     }
 
