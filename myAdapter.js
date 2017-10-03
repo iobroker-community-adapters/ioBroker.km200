@@ -497,8 +497,9 @@ class MyAdapter {
     static equal(a,b) {
         if (a === b)
             return true;
-        let ta = this.T(a);
-        if (ta === this.T(b)) {
+        let ta = this.T(a),
+            tb = this.T(b);
+        if (ta === tb) {
             if (ta === 'array' || ta === 'function' || ta === 'object')
                 return JSON.stringify(a) === JSON.stringify(b);
         }
