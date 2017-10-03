@@ -436,7 +436,7 @@ function main() {
             return createStates();
         })
         .then(() => A.getObjectList({
-            startkey: A.D(ain),
+            startkey: ain,
             endkey: ain + '\u9999'
         })).then(res => A.seriesOf(res.rows, item => { // clean all states which are not part of the list
             if (states[item.id.slice(ain.length)])
