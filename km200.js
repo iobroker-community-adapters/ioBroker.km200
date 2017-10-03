@@ -445,6 +445,6 @@ function main() {
                 .then(() => A.delObject(item.id))
                 .then(() => A.D(`Del Object: ${item.id}`), () => null) ///TC
                 .catch(() => null);
-        }, 10)).then(() => mtimeout = setInterval(updateStates, adapter.config.interval * 1000 * 60));
+        }, 10)).then(() => A.timer = mtimeout = setInterval(updateStates, adapter.config.interval * 1000 * 60));
 
 }

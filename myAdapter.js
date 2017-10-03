@@ -161,6 +161,12 @@ class MyAdapter {
     static set debug(y) {
         inDebug = y;
     }
+    static get timer() {
+        return timer;
+    }
+    static set timer(y) {
+        timer = y;
+    }
     static get messages() {
         return messages;
     }
