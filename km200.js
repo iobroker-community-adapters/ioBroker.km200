@@ -173,6 +173,8 @@ class KM200 {
             return Promise.reject(A.I(`Invalid (not Array) getService for ${A.O(service)}`));
         A.D(`try to get services for ${A.O(service)}`);
         return A.seriesOf(service, item => {
+            if (this.isBlocked(item))
+                return Promise.resolve(null);
             return this.get(item)
                 .then(data => {
                     //                    A.D(`get returned ${A.O(data)}`)
@@ -380,7 +382,7 @@ function updateStates(items) {
                     val = data[km.valIs];
                 if (km.unitOfMeasure === 'mins')
                     val = minutes(parseInt(val));
-                return A.makeState(n, val, true).then(() => A.I(`Updated '${n}' = ${A.O(val)}`));
+                return A.makeState(n, val, true).then(() => A.D(`Updated '${n}' = ${A.O(val)}`));
             }).catch(err => A.I(`Update State ${n} err: ${A.O(err)}`));
     }, 5);
 }
@@ -408,18 +410,19 @@ function main() {
     ain = adapter.name + '.' + adapter.instance + '.';
 
     A.I(`${ain} address: http://${adapter.config.adresse}`);
-    A.I(`Interval=${adapter.config.interval}, Black/Push-list: ${adapter.config.blacklist}`);
-
     km200.init(adapter.config.adresse, adapter.config.accesskey);
 
-    var blacklist = A.J(adapter.config.blacklist);
-
+//    var blacklist = A.J(adapter.config.blacklist);
+    let blacklist = A.trim(A.split(adapter.config.blacklist.replace(/\"|\[|\]/g,' '),','));
     if (blacklist && Array.isArray(blacklist))
         km200.addBlocked(blacklist);
     else
         A.W(`KM200: invalid black/whitelist will be ignored:'${adapter.config.blacklist}'
             need to be an Array with []`);
-
+        
+    A.I(`Interval=${adapter.config.interval} min, Black/Push-list: ${blacklist}`);
+            
+            
     km200.getServices()
         .then(obj => {
             if (!obj || Object.keys(obj).length === 0) {

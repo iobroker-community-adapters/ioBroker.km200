@@ -47,16 +47,19 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
 
   Meile Liste schaut so aus `["/gateway*","/recordings*",".*switchPrograms.*","/heatSource*",".*holidayModes.*"]` und blendet ca 90 der ~150 Datensätze meiner Anlage aus.
 
+  Seit V 1.1.2 können die Klammern und hochkommas weggelassen werden und die blockierten/gepushten Werte nur mit Beistrich getrennt geschrieben werden!
+
   Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
 
 ## Important/Wichtig
 * Adapter requires node >= v4.3.*!
 
 ## Changelog
-### 1.1.1
+### 1.1.2
 * Adapter handles better communication and retries if he got an error.
 * you can set debug-mode by adding 'debug!' in front of host.
 * Host port is not required and can be added to hostname with :xxx at end.
+* Simpler blocklist handling, does not ask device for services which are blocked
 
 ### 0.4.3
 * Renamed repository to ioBroker.km200
