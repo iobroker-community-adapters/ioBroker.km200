@@ -41,7 +41,7 @@ class KM200 {
      *  accessKey = hex string like 'b742c3085bcaeac989353b7655c016dda46e567fe6e8a609e8ea796e20a78a33' which you got from https://ssl-account.com/km200.andreashahn.info/
      *  pollTime = in wie vielen Minuten werden 
      */
-    init(accessUrl,  accessKey) {
+    init(accessUrl, accessKey) {
         if (!accessUrl || !accessKey)
             return A.W(`KM200.init argument error:init(${accessUrl},  ${accessKey}), no init done!`);
         this.aesKey = new Buffer(accessKey, 'hex');
@@ -116,7 +116,7 @@ class KM200 {
         const opt = A.clone(this.options);
         opt.method = 'GET';
         opt.path = service;
-        opt.status = [200,403];
+        opt.status = [200, 403];
         return A.retry(1, () => A.request(opt)
             .then(data => {
                 if (!data)
@@ -136,7 +136,7 @@ class KM200 {
                 if (o && o.references)
                     o = o.references;
                 return o;
-            }, err => err.indexOf('status 403/')> 0 ? Promise.resolve() : Promise.reject(err)));
+            }, err => err.indexOf('status 403/') > 0 ? Promise.resolve() : Promise.reject(err)));
         //        A.D(A.O(opt));
     }
     set(service, value) {
@@ -302,9 +302,9 @@ function createStates() {
             case 'systeminfo':
             case 'errorList':
             case 'arrayData':
-                v = o.values;
+                v = A.O(o.values);
                 o.valIs = "values";
-                t = 'array';
+                t = 'string';
                 w = false;
                 break;
             case 'switchProgram':
@@ -344,6 +344,7 @@ function createStates() {
         if (typeof o.maxValue !== 'undefined')
             c.common.max = o.maxValue;
         c.native.km200 = o;
+        c.common.native = {km200: o};
         states[n] = c;
         return A.makeState(c.common, v, true);
     }, 10).then(() => {
@@ -382,7 +383,7 @@ function updateStates(items) {
                     val = data[km.valIs];
                 if (km.unitOfMeasure === 'mins')
                     val = minutes(parseInt(val));
-                return A.makeState(n, val, true).then(() => A.D(`Updated '${n}' = ${A.O(val)}`));
+                return A.makeState(n, val, true);
             }).catch(err => A.I(`Update State ${n} err: ${A.O(err)}`));
     }, 5);
 }
@@ -412,17 +413,17 @@ function main() {
     A.I(`${ain} address: http://${adapter.config.adresse}`);
     km200.init(adapter.config.adresse, adapter.config.accesskey);
 
-//    var blacklist = A.J(adapter.config.blacklist);
-    let blacklist = A.trim(A.split(adapter.config.blacklist.replace(/\"|\[|\]/g,' '),','));
+    //    var blacklist = A.J(adapter.config.blacklist);
+    let blacklist = A.trim(A.split(adapter.config.blacklist.replace(/\"|\[|\]/g, ' '), ','));
     if (blacklist && Array.isArray(blacklist))
         km200.addBlocked(blacklist);
     else
         A.W(`KM200: invalid black/whitelist will be ignored:'${adapter.config.blacklist}'
             need to be an Array with []`);
-        
+
     A.I(`Interval=${adapter.config.interval} min, Black/Push-list: ${blacklist}`);
-            
-            
+
+
     km200.getServices()
         .then(obj => {
             if (!obj || Object.keys(obj).length === 0) {

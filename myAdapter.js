@@ -494,12 +494,24 @@ class MyAdapter {
         })).catch(err => !retry ? Promise.reject(err) : this.wait(100, retry - 1).then(a => this.get(url, a)));
     }
 
+    static equal(a,b) {
+        if (a === b)
+            return true;
+        let ta = this.T(a);
+        if (ta === this.T(b)) {
+            if (ta === 'array' || ta === 'function' || ta === 'object')
+                return JSON.stringify(a) === JSON.stringify(b);
+        }
+        return false;
+    }
+
     static changeState(id, value, ack, always) {
         assert(typeof id === 'string', 'changeState (id,,,) error: id is not a string!');
         always = always === undefined ? false : !!always;
         ack = ack === undefined ? true : !!ack;
         return this.getState(id)
-            .then(st => st && !always && st.val === value && st.ack === ack ? Promise.resolve() : this.setState(id, value, ack))
+            .then(st => st && !always && this.equal(st.val, value) && st.ack === ack ? Promise.resolve() : 
+                this.setState(this.D(`Change ${id} to ${this.O(value)} with ack: ${ack}`,id), value, ack))
             .catch(err => this.W(`Error in MyAdapter.setState(${id},${value},${ack}): ${err}`, this.setState(id, value, ack)));
     }
 
