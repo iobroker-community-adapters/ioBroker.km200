@@ -502,7 +502,8 @@ class MyAdapter {
         if (ta === tb) {
             if (ta === 'array' || ta === 'function' || ta === 'object')
                 return JSON.stringify(a) === JSON.stringify(b);
-        }
+        } else if (ta === 'string' && (tb === 'array' || tb === 'function' || tb === 'object') && a === this.O(b))
+            return true;
         return false;
     }
 
