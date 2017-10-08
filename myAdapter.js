@@ -408,7 +408,7 @@ class MyAdapter {
             turl = url.parse(turl.trim(), true);
         if (this.T(opt) === 'object')
             for (var i of Object.keys(opt))
-                if (this.W(i, i) !== 'url') turl[i] = opt[i];
+                if (i !== 'url') turl[i] = opt[i];
         //        this.D(`mup ret: ${this.O(turl)}`);
         return turl;
     }
@@ -419,7 +419,7 @@ class MyAdapter {
         if (this.T(opt) !== 'object' && !(opt instanceof url.Url))
             return Promise.reject(this.W(`Invalid opt or Url for request: ${this.O(opt)}`));
         if (opt.url > '')
-            opt = this.urm(opt.url, opt);
+            opt = this.url(opt.url, opt);
         if (opt.json)
             if (opt.headers) opt.headers.Accept = 'application/json';
             else opt.headers = {
