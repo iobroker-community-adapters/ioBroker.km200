@@ -226,9 +226,6 @@ class MyAdapter {
     static wait(time, arg) {
         return new Promise(res => setTimeout(res, time, arg));
     }
-    static F(obj) {
-        return obj;
-    }
 
     static P(pv, res, rej) {
         if (pv instanceof Promise)
@@ -460,9 +457,9 @@ class MyAdapter {
                 if (!msg)
                     msg = e;
                 res && res.removeAllListeners();
-//                req && req.removeAllListeners();
+                //                req && req.removeAllListeners();
                 req && !req.aborted && req.abort();
-//                res && res.destroy();
+                //                res && res.destroy();
                 MyAdapter.D('err in response:' + msg);
                 return reject(msg);
             }
@@ -494,7 +491,7 @@ class MyAdapter {
         })).catch(err => !retry ? Promise.reject(err) : this.wait(100, retry - 1).then(a => this.get(url, a)));
     }
 
-    static equal(a,b) {
+    static equal(a, b) {
         if (a === b)
             return true;
         let ta = this.T(a),
@@ -512,8 +509,8 @@ class MyAdapter {
         always = always === undefined ? false : !!always;
         ack = ack === undefined ? true : !!ack;
         return this.getState(id)
-            .then(st => st && !always && this.equal(st.val, value) && st.ack === ack ? Promise.resolve() : 
-                this.setState(this.D(`Change ${id} to ${this.O(value)} with ack: ${ack}`,id), value, ack))
+            .then(st => st && !always && this.equal(st.val, value) && st.ack === ack ? Promise.resolve() :
+                this.setState(this.D(`Change ${id} to ${this.O(value)} with ack: ${ack}`, id), value, ack))
             .catch(err => this.W(`Error in MyAdapter.setState(${id},${value},${ack}): ${err}`, this.setState(id, value, ack)));
     }
 
@@ -543,13 +540,15 @@ class MyAdapter {
             type: 'state',
             _id: id
         };
-        for (let i in ido)
+        for (let i in ido) {
             if (i === 'native') {
                 st.native = st.native || {};
                 for (let j in ido[i])
                     st.native[j] = ido[i][j];
-            } else if (i !== 'id' && i !== 'val')
-            st.common[i] = ido[i];
+            } else if (i !== 'id' && i !== 'val') st.common[i] = ido[i];
+        }
+        if (st.common.write)
+            st.common.role = st.common.role.replace(/^value/, 'level');
         //    this.I(`will create state:${id} with ${this.O(st)}`);
         return this.extendObject(id, st, null)
             .then(x => this.states[id] = x)
