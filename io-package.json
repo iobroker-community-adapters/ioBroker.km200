@@ -1,40 +1,51 @@
 {
     "common": {
-        "name":                     "km200",
-        "version":                  "1.1.2",
-        "title":                    "Buderus KM200 adapter",
-        "desc":                     {
- 			             "en": "ioBroker Buderus KM200 Adapter",
- 			             "de": "ioBroker Buderus KM200 Adapter",
- 			             "ru": "ioBroker Buderus KM200 драйвер как образец"
-	},
-        "platform":                 "Javascript/Node.js",
-        "mode":                     "daemon",
-        "loglevel":                 "info",
-        "icon":                     "km200.png",
-        "enabled":                  false,
-	    "extIcon":                  "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
-	    "keywords":                 ["Buderus","KM200", "vis", "GUI", "graphical", "scada"],
-        "readme":                   "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
-        "type":                     "hardware",
-        "restartAdapters":          ["no_vis"]
+        "name": "km200",
+        "version": "1.1.2",
+        "title": "Buderus KM200 adapter",
+        "desc": {
+            "en": "ioBroker Buderus KM200 Adapter",
+            "de": "ioBroker Buderus KM200 Adapter",
+            "ru": "ioBroker Buderus KM200 драйвер как образец"
+        },
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "loglevel": "info",
+        "icon": "km200.png",
+        "enabled": false,
+        "extIcon": "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
+        "keywords": [
+            "Buderus",
+            "KM200",
+            "vis",
+            "GUI",
+            "graphical",
+            "scada"
+        ],
+        "readme": "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
+        "type": "climate-control",
+        "restartAdapters": [
+            "no_vis"
+        ],
+        "authors": [
+            {
+                "name": "Frank Joke",
+                "email": "frankjoke@hotmail.com"
+            }
+        ]
     },
     "news": {
         "1.1.1": {
-          "en": "Adapter handles better communication and retries if he got an error.",
-          "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
+            "en": "Adapter handles better communication and retries if he got an error.",
+            "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
         }
-      },
-      "native": {
-        "adresse":"BuderusKM200.fritz.box",
+    },
+    "native": {
+        "adresse": "BuderusKM200.fritz.box",
         "blacklist": "[]",
         "interval": 15,
-        "accesskey":"hexstring"
+        "accesskey": "hexstring"
     },
-    "objects": [
-
-    ],
-    "instanceObjects": [
-      
-    ]
+    "objects": [],
+    "instanceObjects": []
 }
