@@ -55,6 +55,10 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
 * Adapter requires node >= v4.3.*!
 
 ## Changelog
+### 1.1.5 
+* Adapter communication and retries more often to catch more errors.
+* Added right text for blocklist in config screen
+
 ### 1.1.2
 * Adapter handles better communication and retries if he got an error.
 * you can set debug-mode by adding 'debug!' in front of host.

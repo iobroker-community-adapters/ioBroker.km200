@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "1.1.2",
+        "version": "1.1.5",
         "title": "Buderus KM200 adapter",
         "desc": {
             "en": "ioBroker Buderus KM200 Adapter",
@@ -35,6 +35,10 @@
         ]
     },
     "news": {
+        "1.1.5": {
+            "en": "Adapter communication and retries more often to catch more errors.",
+            "de": "Adapter versucht es öfter die Daten vom KM200 zu lesen um interne Server Error 500 zu umgehen"
+        },
         "1.1.1": {
             "en": "Adapter handles better communication and retries if he got an error.",
             "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
@@ -42,7 +46,7 @@
     },
     "native": {
         "adresse": "BuderusKM200.fritz.box",
-        "blacklist": "[]",
+        "blacklist": "/gateway*, /recordings*, .*switchPrograms.*, /heatSource*, .*holidayModes.*",
         "interval": 15,
         "accesskey": "hexstring"
     },

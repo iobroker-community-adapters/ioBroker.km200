@@ -113,11 +113,11 @@ class KM200 {
             return Promise.reject(A.W(`KM200.get service parameter not as requested '${A.O(service)}'`));
         if (!this.crypt || !this.options)
             return Promise.reject(A.W(`KM200.get not initialized for decryption! Will not work ${A.O(service)}'`));
-        const opt = A.clone(this.options);
+        const opt = A.url('http://'+this.options.hostname+service,this.options);
         opt.method = 'GET';
-        opt.path = service;
+//        opt.url = opt.hostname + service;
         opt.status = [200, 403];
-        return A.retry(1, () => A.request(opt)
+        return A.retry(2, () => A.request(opt)
             .then(data => {
                 if (!data)
                     return Promise.reject(`No Data for ${service}!`);

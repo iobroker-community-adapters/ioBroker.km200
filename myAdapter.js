@@ -403,9 +403,13 @@ class MyAdapter {
         //        this.D(`mup start: ${this.O(turl)}: ${this.O(opt)}`);
         if (this.T(turl) === 'string')
             turl = url.parse(turl.trim(), true);
-        if (this.T(opt) === 'object')
+        if (this.T(opt) === 'object') {
+            opt = this.clone(opt);
+            if (!turl || !(turl instanceof url.Url) )
+                turl = new url.Url(opt.url);
             for (var i of Object.keys(opt))
-                if (i !== 'url') turl[i] = opt[i];
+                if (opt.hasOwnProperty(i) && i !== 'url') turl[i] = opt[i];
+        }
         //        this.D(`mup ret: ${this.O(turl)}`);
         return turl;
     }
@@ -413,10 +417,11 @@ class MyAdapter {
     static request(opt, value, transform) {
         if (this.T(opt) === 'string')
             opt = this.url(opt.trim());
-        if (this.T(opt) !== 'object' && !(opt instanceof url.Url))
-            return Promise.reject(this.W(`Invalid opt or Url for request: ${this.O(opt)}`));
-        if (opt.url > '')
+        if (!(opt instanceof url.Url)) {
+            if (this.T(opt) !== 'object' || !opt.hasOwnProperty('url'))
+                return Promise.reject(this.W(`Invalid opt or Url for request: ${this.O(opt)}`));
             opt = this.url(opt.url, opt);
+        }
         if (opt.json)
             if (opt.headers) opt.headers.Accept = 'application/json';
             else opt.headers = {
@@ -456,9 +461,9 @@ class MyAdapter {
             function err(e, msg) {
                 if (!msg)
                     msg = e;
-                res && res.removeAllListeners();
+                if (res) res.removeAllListeners();
                 //                req && req.removeAllListeners();
-                req && !req.aborted && req.abort();
+                if (req && !req.aborted) req.abort();
                 //                res && res.destroy();
                 MyAdapter.D('err in response:' + msg);
                 return reject(msg);
