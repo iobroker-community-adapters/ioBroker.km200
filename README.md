@@ -55,8 +55,9 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
 * Adapter requires node >= v4.3.*!
 
 ## Changelog
-### 1.1.5 
+### 1.1.6 
 * Adapter communication and retries more often to catch more errors.
+* Writes are also retried
 * Added right text for blocklist in config screen
 
 ### 1.1.2

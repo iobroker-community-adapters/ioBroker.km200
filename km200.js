@@ -144,7 +144,7 @@ class KM200 {
         const post = this.crypt.encrypt(JSON.stringify({
             value: value
         })).toString('base64');
-        const opt = A.clone(this.options);
+        const opt = A.url('http://'+this.options.hostname+service,this.options);
         opt.headers["Content-Type"] = "application/json";
         opt.path = service;
         opt.method = 'POST';
