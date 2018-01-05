@@ -8,7 +8,7 @@
 "use strict";
 const MCrypt = require('mcrypt').MCrypt,
     utils = require(__dirname + '/lib/utils'), // Get common adapter utils
-    adapter = utils.adapter('km200'),
+    adapter = utils.Adapter('km200'),
     //	assert = require('assert'),
     A = require('./myAdapter');
 //const EventEmitter =  require('events').EventEmitter;
