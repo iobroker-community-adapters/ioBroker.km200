@@ -7,11 +7,21 @@
 //// jxshint node:true, esversion:6, strict:true, undef:true, unused:true
 "use strict";
 const MCrypt = require('mcrypt').MCrypt,
-    utils = require(__dirname + '/lib/utils'), // Get common adapter utils
+    utils = require('@iobroker/adapter-core'),
     adapter = utils.Adapter('km200'),
+    crypto = require('crypto'),
     //	assert = require('assert'),
     A = require('./myAdapter');
 //const EventEmitter =  require('events').EventEmitter;
+
+const km200_crypt_md5_salt = new Uint8Array([
+    0x86, 0x78, 0x45, 0xe9, 0x7c, 0x4e, 0x29, 0xdc,
+    0xe5, 0x22, 0xb9, 0xa7, 0xd3, 0xa3, 0xe0, 0x7b,
+    0x15, 0x2b, 0xff, 0xad, 0xdd, 0xbe, 0xd7, 0xf5,
+    0xff, 0xd8, 0x42, 0xe9, 0x89, 0x5a, 0xd1, 0xe4
+]);
+
+
 
 A.init(adapter, main); // associate adapter and main with MyAdapter
 
@@ -98,7 +108,7 @@ class KM200 {
             const j = li.indexOf('*');
             if (j > 1 && li[j - 1] !== '.')
                 li = li.slice(0, j) + '.' + li.slice(j, li.length);
-            (ispush ? this.pushed : this.blocked).push(A.D(`add to ${ispush? 'pushed' : 'blocked'} ${li}`, new RegExp(li)));
+            (ispush ? this.pushed : this.blocked).push(A.D(`add to ${ispush ? 'pushed' : 'blocked'} ${li}`, new RegExp(li)));
         }
     }
 
@@ -113,12 +123,12 @@ class KM200 {
             return Promise.reject(A.W(`KM200.get service parameter not as requested '${A.O(service)}'`));
         if (!this.crypt || !this.options)
             return Promise.reject(A.W(`KM200.get not initialized for decryption! Will not work ${A.O(service)}'`));
-        const opt = A.url('http://'+this.options.hostname+service,this.options);
+        const opt = A.url('http://' + this.options.hostname + service, this.options);
         opt.method = 'GET';
-//        opt.url = opt.hostname + service;
+        //        opt.url = opt.hostname + service;
         opt.status = [200, 403];
         return A.retry(2, () => A.request(opt)
-            .then(data => {
+            .then((data) => {
                 if (!data)
                     return Promise.reject(`No Data for ${service}!`);
                 const b = new Buffer(data, 'base64');
@@ -131,12 +141,12 @@ class KM200 {
                         s = s.slice(0, s.length - 1);
                     o = A.J(s);
                 } catch (e) {
-                    return Promise.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e,3)}`);
+                    return Promise.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e, 3)}`);
                 }
                 if (o && o.references)
                     o = o.references;
                 return o;
-            }, err => err.indexOf('status 403/') > 0 ? Promise.resolve() : Promise.reject(err)));
+            }, (err) => err.indexOf('status 403/') > 0 ? Promise.resolve() : Promise.reject(err)));
         //        A.D(A.O(opt));
     }
     set(service, value) {
@@ -144,7 +154,7 @@ class KM200 {
         const post = this.crypt.encrypt(JSON.stringify({
             value: value
         })).toString('base64');
-        const opt = A.url('http://'+this.options.hostname+service,this.options);
+        const opt = A.url('http://' + this.options.hostname + service, this.options);
         opt.headers["Content-Type"] = "application/json";
         opt.path = service;
         opt.method = 'POST';
@@ -172,16 +182,16 @@ class KM200 {
         if (!Array.isArray(service))
             return Promise.reject(A.I(`Invalid (not Array) getService for ${A.O(service)}`));
         A.D(`try to get services for ${A.O(service)}`);
-        return A.seriesOf(service, item => {
+        return A.seriesOf(service, (item) => {
             if (this.isBlocked(item))
                 return Promise.resolve(null);
             return this.get(item)
-                .then(data => {
+                .then((data) => {
                     //                    A.D(`get returned ${A.O(data)}`)
                     if (!data)
                         return null;
                     if (Array.isArray(data)) {
-                        return A.seriesOf(data, di => {
+                        return A.seriesOf(data, (di) => {
                             //                            A.D(`array had ${A.O(di)}`)
                             if (di && di.id && di.uri && !this.isBlocked(di.id))
                                 return this.getServices([di.id]);
@@ -199,7 +209,7 @@ class KM200 {
                         }
                     }
                     return null;
-                }).catch(err => A.D(`could not get data for '${item} with err=${err}`));
+                }).catch((err) => A.D(`could not get data for '${item} with err=${err}`));
         }, 10).then(() => {
             if (!level) return Promise.resolve();
             const s = Object.keys(this.scannedServices);
@@ -248,7 +258,7 @@ A.stateChange = function (id, state) {
             ite[ids] = states[ids];
             //                adapter.log.info('Set KM200 returned: '+ A.O(ite));
             return true;
-        }, err => A.W(`Set KM200 err: ${A.O(err)}`, err))
+        }, (err) => A.W(`Set KM200 err: ${A.O(err)}`, err))
         .then(() => (A.wait(2000).then(() => updateStates(id)), true));
 };
 
@@ -267,7 +277,7 @@ function createStates() {
     //      allowedValues: 27,   setpointProperty: 4,   maxNbOfSwitchPoints: 4,   maxNbOfSwitchPointsPerDay: 4,   switchPointTimeRaster: 4,   
     //      switchPoints: 4,   minValue: 12,   maxValue: 12,   values: 9,   recordedResource: 8,   interval: 8,   sampleRate: 8,   
     //      'recording-type': 8,   recording: 8 }
-    return A.seriesIn(km200.scannedServices, n => {
+    return A.seriesIn(km200.scannedServices, (n) => {
         let o = km200.scannedServices[n];
         let t = o.type;
         let u = o.unitOfMeasure;
@@ -344,7 +354,7 @@ function createStates() {
         if (typeof o.maxValue !== 'undefined')
             c.common.max = o.maxValue;
         c.native.km200 = o;
-        c.common.native = {km200: o};
+        c.common.native = { km200: o };
         states[n] = c;
         return A.makeState(c.common, v, true);
     }, 10).then(() => {
@@ -368,14 +378,12 @@ function updateStates(items) {
             A.I(`Update ${A.O(ni)}`);
         items = ni;
     } else
-    if (!items)
-        items = states;
-
-    A.seriesIn(items, n => {
+        if (!items) items = states;
+    A.seriesIn(items, (n) => {
         const o = items[n];
         const km = o.native.km200;
         return km200.get(km.id)
-            .then(data => {
+            .then((data) => {
                 let val = null;
                 if (km.valIs === 'states')
                     val = data.allowedValues.indexOf(data.value);
@@ -384,14 +392,61 @@ function updateStates(items) {
                 if (km.unitOfMeasure === 'mins')
                     val = minutes(parseInt(val));
                 return A.makeState(n, val, true);
-            }).catch(err => A.I(`Update State ${n} err: ${A.O(err)}`));
+            }).catch((err) => A.I(`Update State ${n} err: ${A.O(err)}`));
     }, 5);
 }
 
 var ain = '';
 
-function main() {
 
+function md5(text) {
+    return crypto.createHash('md5').update(text).digest("hex");
+}
+
+function str2ab(str) {
+    let buf = new ArrayBuffer(str.length * 1); // 2 bytes for each char
+    let bufView = new Uint8Array(buf);
+    for (let i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return bufView;
+}
+
+function ab2str(buf) {
+    return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+
+function concatUint8Array(array1, array2) {
+    const array3 = new Uint8Array(array1.length + array2.length);
+    for (let i = 0; i < array1.length; i++) {
+        array3[i] = array1[i];
+    }
+    for (let i = 0; i < array2.length; i++) {
+        array3[array1.length + i] = array2[i];
+    }
+    return array3;
+}
+
+function getAccesskey() {
+    if (adapter.config.gatewaypassword && adapter.config.privatepassword) {
+        adapter.config.gatewaypassword = adapter.config.gatewaypassword.replace(/-/g, '');
+        let km200_gateway_password = str2ab(adapter.config.gatewaypassword);
+        let km200_private_password = str2ab(adapter.config.privatepassword);
+        // Erste Hälfte des Schlüssels: MD5 von ( Gerätepasswort . Salt )
+        let key_1 = md5(concatUint8Array(km200_gateway_password, km200_crypt_md5_salt));
+        // Zweite Hälfte des Schlüssels - initial: MD5 von ( Salt )
+        let key_2_initial = md5(km200_crypt_md5_salt);
+        // Zweite Hälfte des Schlüssels - privat: MD5 von ( Salt . privates Passwort )
+        let key_2_private = md5(concatUint8Array(km200_crypt_md5_salt, km200_private_password));
+        let km200_crypt_key_initial = key_1 + key_2_initial;
+        let km200_crypt_key_private = key_1 + key_2_private;
+        return km200_crypt_key_private.trim().toLowerCase();
+    } else {
+        return undefined;
+    }
+}
+
+function main() {
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // adapter.config:
 
@@ -403,7 +458,12 @@ function main() {
     if (!adapter.config.adresse || adapter.config.adresse.length < 2)
         return A.W(`config KM200 Addresse not available or too short: ${adapter.config.adresse}`);
 
-    adapter.config.accesskey = adapter.config.accesskey.trim().toLowerCase();
+    if (!adapter.config.accesskey.length === 0 || (adapter.config.privatepassword.length > 0 && adapter.config.gatewaypassword.length > 0)) {
+        adapter.config.accesskey = getAccesskey();
+    }
+
+    adapter.log.info("Acceskey for Device : " + adapter.config.accesskey);
+    // adapter.config.accesskey = adapter.config.accesskey.trim().toLowerCase();
     if (!adapter.config.accesskey || !(/^[0-9a-f]{64}$/.test(adapter.config.accesskey)))
         return A.W(`config KM200 AccessKey seems to be invalid (need to be a hex string of 64 characters): 
             ${A.O(adapter.config.accesskey)}`);
@@ -414,18 +474,17 @@ function main() {
     km200.init(adapter.config.adresse, adapter.config.accesskey);
 
     //    var blacklist = A.J(adapter.config.blacklist);
-    let blacklist = A.trim(A.split(adapter.config.blacklist.replace(/\"|\[|\]/g, ' '), ','));
+    let blacklist = A.trim(A.split(adapter.config.blacklist.replace(/"|\[|\]/g, ' '), ','));
     if (blacklist && Array.isArray(blacklist))
         km200.addBlocked(blacklist);
     else
         A.W(`KM200: invalid black/whitelist will be ignored:'${adapter.config.blacklist}'
-            need to be an Array with []`);
+                    need to be an Array with []`);
 
     A.I(`Interval=${adapter.config.interval} min, Black/Push-list: ${blacklist}`);
 
-
     km200.getServices()
-        .then(obj => {
+        .then((obj) => {
             if (!obj || Object.keys(obj).length === 0) {
                 adapter.log.error(`Did not get any Services from KLM200!: ${A.O(obj)}, will stop adapter.`);
                 //                adapter.stop();
@@ -438,7 +497,7 @@ function main() {
         .then(() => A.getObjectList({
             startkey: ain,
             endkey: ain + '\u9999'
-        })).then(res => A.seriesOf(res.rows, item => { // clean all states which are not part of the list
+        })).then((res) => A.seriesOf(res.rows, (item) => { // clean all states which are not part of the list
             if (states[item.id.slice(ain.length)])
                 return Promise.resolve();
             return A.deleteState(item.id)

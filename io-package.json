@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "1.1.6",
+        "version": "1.1.7",
         "title": "Buderus KM200 adapter",
         "desc": {
             "en": "ioBroker Buderus KM200 Adapter",
@@ -12,6 +12,7 @@
         "mode": "daemon",
         "loglevel": "info",
         "icon": "km200.png",
+        "materialize": true,
         "enabled": false,
         "extIcon": "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
         "keywords": [
@@ -35,6 +36,10 @@
         ]
     },
     "news": {
+        "1.1.7": {
+            "en": "Supports Admin3 and getting access key by it self",
+            "de": "Admin3 Unsterstützung"
+        },
         "1.1.5": {
             "en": "Adapter communication and retries more often to catch more errors, also for writes.",
             "de": "Adapter versucht es öfter die Daten vom KM200 zu lesen um interne Server Error 500 zu umgehen"
@@ -48,7 +53,9 @@
         "adresse": "BuderusKM200.fritz.box",
         "blacklist": "/gateway*, /recordings*, .*switchPrograms.*, /heatSource*, .*holidayModes.*",
         "interval": 15,
-        "accesskey": "hexstring"
+        "accesskey": "",
+        "gatewaypassword": "wwww-xxxx-yyyy-zzzz",
+        "privatepassword": ""
     },
     "objects": [],
     "instanceObjects": []

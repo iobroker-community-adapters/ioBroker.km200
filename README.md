@@ -29,9 +29,7 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
   Dazu ist es notwendig zuerst die app auf einem Handy zu installieren und dort das Passwort zu setzen, 
   die App fragt nach dem Passwort und dem Loginnamen auf dem Gerät und dann kann man sein Passwort setzten.
 
-  Dieses selbst gesetzte Passwort und das Gerätelogin werden dann auf der Webseite [https://ssl-account.com/km200.andreashahn.info/]
-  eingegeben und man erält seinen AccessKey (ein 64 Zeichen langes Hex-String). Dieser ist im Adapterkonfig einzugeben.
-  Der Adapter brauch noch die IP (oder den Netzwerknamen, bei mir 'BuderusKM200.fritz.box') 
+  Der Adapter braucht noch die IP (oder den Netzwerknamen, bei mir 'BuderusKM200.fritz.box') 
   und die Portadrese (ist 80 am Gerät, aber falls ihr ihn über einen Router geändert habt... ).
 
   Da der adapter die daten von der Anlage abfragen muß hab ich ein Update-Intervall definiert, 
@@ -55,6 +53,11 @@ Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjo
 * Adapter requires node >= v4.3.*!
 
 ## Changelog
+
+### 1.1.7
+* (Schmupu) Supports Admin3
+* (Schmupu) Only device password and own password needed. You do not have to get the access code anymore. 
+
 ### 1.1.6 
 * Adapter communication and retries more often to catch more errors.
 * Writes are also retried
