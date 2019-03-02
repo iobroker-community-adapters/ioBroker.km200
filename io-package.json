@@ -6,7 +6,14 @@
         "desc": {
             "en": "ioBroker Buderus KM200 Adapter",
             "de": "ioBroker Buderus KM200 Adapter",
-            "ru": "ioBroker Buderus KM200 драйвер как образец"
+            "ru": "ioBroker Buderus KM200 драйвер как образец",
+            "pt": "Adaptador Buderus KM200 da ioBroker",
+            "nl": "ioBroker Buderus KM200-adapter",
+            "fr": "Adaptateur ioBroker Buderus KM200",
+            "it": "IoBroker Buderus KM200 Adapter",
+            "es": "Adaptador ioBroker Buderus KM200",
+            "pl": "Adapter ioBroker Buderus KM200",
+            "zh-cn": "ioBroker Buderus KM200适配器"
         },
         "platform": "Javascript/Node.js",
         "mode": "daemon",

@@ -1,0 +1,11 @@
+{
+    "Description": "请提供KM200作为ip addess或网络名称的链接！",
+    "Gateway Password": "设备密码",
+    "KM200 adapter settings": "",
+    "Private Password": "私人密码",
+    "accesskey": "Webseite上的Accesskey生成https://ssl-account.com/km200.andreashahn.info/",
+    "address": "链接到KM200",
+    "blacklist": "名称列表（可以是带有“*”的部分）来禁用从KM200生成状态，如：“/ Gateway *”，“/ recordings / *",
+    "interval": "用于投票的Intrevall（默认15分钟，最少5分钟）",
+    "port": "端口（默认为80）"
+}

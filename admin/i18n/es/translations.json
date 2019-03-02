@@ -1,0 +1,11 @@
+{
+    "Description": "Por favor, proporcione un enlace a KM200 como nombre de red o de IP! ",
+    "Gateway Password": "Contraseña del dispositivo",
+    "KM200 adapter settings": "",
+    "Private Password": "Contraseña privada",
+    "accesskey": "Generación de la clave de acceso en el sitio web https://ssl-account.com/km200.andreashahn.info/",
+    "address": "Enlace a KM200",
+    "blacklist": "lista de nombres (pueden ser partes con \"*\") para deshabilitar los estados generadores desde KM200 como: \"/ Gateway *\", \"/ recordings / *",
+    "interval": "Intrevall para sondeo (predeterminado 15 minutos, mínimo 5 minutos)",
+    "port": "Puerto (80 predeterminado)"
+}
