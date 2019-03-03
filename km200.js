@@ -6,8 +6,9 @@
 /*jshint -W030*/
 //// jxshint node:true, esversion:6, strict:true, undef:true, unused:true
 "use strict";
-const MCrypt = require('mcrypt').MCrypt,
+const  // MCrypt = require('mcrypt').MCrypt,
     crypto = require('crypto'),
+    mcrypt = require('js-rijndael'),
     A = require('./myAdapter').MyAdapter;
 
 const km200_crypt_md5_salt = new Uint8Array([
@@ -19,7 +20,7 @@ const km200_crypt_md5_salt = new Uint8Array([
 
 class KM200 {
     constructor() {
-        this.crypt = null;
+//        this.crypt = null;
         this.aesKey = null; // buffer will be generated on init from accessKey
         this.options = null;
         this.scannedServices = null;
@@ -93,10 +94,11 @@ class KM200 {
             return A.W(`KM200.init argument error:init(${accessUrl},  GW:${gwpw}, PW:${prpw}), no init done!`);
         this.aesKey = (/^[0-9a-f]{64}$/.test(gwpw)) ? gwpw : getAccesskey(gwpw, prpw);
         this.aesKey = Buffer.from(this.aesKey, 'hex');
+        this.aesKey =  Array.from(this.aesKey);
         this.scannedServices = null;
         this.blocked = [];
-        this.crypt = new MCrypt('rijndael-128', 'ecb');
-        this.crypt.open(this.aesKey);
+//        this.crypt = new MCrypt('rijndael-128', 'ecb');
+//        this.crypt.open(this.aesKey);
         this.options = {
             hostname: accessUrl,
             timeout: 5000,
@@ -159,8 +161,8 @@ class KM200 {
     get(service) {
         if (!service || service.length < 2 || service[0] !== '/')
             return A.reject(A.W(`KM200.get service parameter not as requested '${A.O(service)}'`));
-        if (!this.crypt || !this.options)
-            return A.reject(A.W(`KM200.get not initialized for decryption! Will not work ${A.O(service)}'`));
+//        if (!this.crypt || !this.options)
+//            return A.reject(A.W(`KM200.get not initialized for decryption! Will not work ${A.O(service)}'`));
         const opt = A.url('http://' + this.options.hostname + service, this.options);
         opt.method = 'GET';
         //        opt.url = opt.hostname + service;
@@ -172,11 +174,15 @@ class KM200 {
                 const b = new Buffer(data, 'base64');
                 let o = null;
                 try {
-                    let s = b.toString('hex');
+                    let s = Array.from(b);
+                    s = mcrypt.decrypt(s, null,this.aesKey, 'rijndael-128', 'ecb');
+                    s = Buffer.from(s).toString('utf8');
                     //                        A.D('fh'+s);
+/*                    
                     s = this.crypt.decrypt(b).toString('utf8');
                     while (s.charCodeAt(s.length - 1) === 0)
                         s = s.slice(0, s.length - 1);
+*/                        
                     o = A.J(s);
                 } catch (e) {
                     return A.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e, 3)}`);
@@ -189,9 +195,16 @@ class KM200 {
     }
     set(service, value) {
 
-        const post = this.crypt.encrypt(JSON.stringify({
+//        const post = this.crypt.encrypt(JSON.stringify({
+//            value: value
+//        })).toString('base64');
+        let post = JSON.stringify({
             value: value
-        })).toString('base64');
+            });
+        post = Buffer.from(post,'utf8').toString('base64');
+        post = Array.from(Buffer.from(post,'utf8'));
+        post = mcrypt.encrypt(post, null,this.aesKey, 'rijndael-128', 'ecb');
+        post = Buffer.from(post).toString('utf8');
         const opt = A.url('http://' + this.options.hostname + service, this.options);
         opt.headers["Content-Type"] = "application/json";
         opt.path = service;

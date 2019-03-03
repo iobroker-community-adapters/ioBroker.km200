@@ -31,7 +31,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^1.0.3",
     "crypto": "^1.0.1",
-    "mcrypt": "^0.1.15"
+    "js-rijndael": "^1.0.0"
   },
   "devDependencies": {
     "axios": "^0.18.0",
