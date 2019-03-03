@@ -4,7 +4,6 @@ os:
   - windows
 language: node_js
 node_js:
-  - '4'
   - '6'
   - '8'
   - '10'
@@ -21,4 +20,4 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-4.8
+      - g++-4.9
