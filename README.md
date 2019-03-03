@@ -46,7 +46,7 @@ Since V 1.1.2 the brackets and commas can be omitted and the blocked / pushed va
 The system works with services that are structured like a directory tree and this is replicated in the adapter.
 
 ## Important
-* Adapter requires node >= v4.3. 
+* Adapter requires node >= v6.* 
 
 ## changelog
 

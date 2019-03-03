@@ -44,7 +44,7 @@ Seit V 1.1.2 können die Klammern und hochkommas weggelassen werden und die bloc
 Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
 
 ## Important/Wichtig
-* Adapter requires node >= v4.3.*!
+* Adapter requires node >= v6.*.*!
 
 ## Changelog
 1.2.0 
