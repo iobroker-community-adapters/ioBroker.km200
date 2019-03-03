@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^1.0.3",
-    "mcrypt": "^0.1.12"
+    "mcrypt": "^0.1.15"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
@@ -46,8 +46,7 @@
     "eslint-plugin-react": "^7.12.4",
     "mocha": "^4.1.0",
     "gulp": "^4.0.0",
-    "axios": "^0.18.0",
-    "@iobroker/adapter-core": "^1.0.3"
+    "axios": "^0.18.0"
   },
   "bugs": {
     "url": "https://github.com/frankjoke/ioBroker.km200/issues"
