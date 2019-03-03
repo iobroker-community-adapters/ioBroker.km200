@@ -1,0 +1,11 @@
+{
+    "Description": "Geef de link naar KM200 op als ip addess of netwerknaam! ",
+    "Gateway Password": "Apparaat wachtwoord",
+    "KM200 adapter settings": "",
+    "Private Password": "Privé wachtwoord",
+    "accesskey": "Genereren van Accesskey op Webseite https://ssl-account.com/km200.andreashahn.info/",
+    "address": "Link naar KM200",
+    "blacklist": "lijst met namen (kan delen zijn met \"*\") om generatorstatussen van KM200 uit te schakelen, zoals: \"/ Gateway *\", \"/ opnames / *",
+    "interval": "Intrevall voor polling (standaard 15 minuten, minimaal 5 minuten)",
+    "port": "Poort (standaard 80)"
+}

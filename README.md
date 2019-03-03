@@ -1,98 +1,101 @@
-![Logo](admin/km200.png)
-[![NPM version](http://img.shields.io/npm/v/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
-**Tests:** Linux/Mac: [![Travis-CI](http://img.shields.io/travis/frankjoke/ioBroker.km200/master.svg)](https://travis-ci.org/frankjoke/ioBroker.km200)
-Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjoke/ioBroker.km200?branch=master&svg=true)](https://ci.appveyor.com/project/frankjoke/ioBroker-km200/)
-
-[![NPM](https://nodei.co/npm/iobroker.km200.png?downloads=true)](https://nodei.co/npm/iobroker.km200/)
-
-
 # ioBroker.km200
 =================
-## ioBroker adapter Buderus KM200
-  Buderus liefert mit dem KM200 eine Netzwerkanbindung ihrer Heizungen [https://www.buderus.de/de/produkte/catalogue/alle-produkte/7719_gateway-logamatic-web-km200-km100-km50].
-  Es gibt laut den Foren auch KM50, KM100 und in nder Zwischenzeit auch ein KM300 welche anscheinend ähnlich funktionieren,
-  leider kann ich das nicht testen da ich nur eine KM200-Box hab, aber ich bitte euch den Adapter auf anderen Systemen zu testen.
+![Logo](admin/km200.png)
+## ioBroker adapter Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi
 
-  Damit kann man über die Buderus-Webseite ([https://www.buderus-connect.de]) oder die 'EasyControl' app vom Handy steuern.
-  Nun hab ich in einem Forum gelesen dass FHEM und SYMCON dafür Treiber/adapter anbieten. 
-  Diese sind jedoch in Perl und PHP geschrieben die ich beide überhaupt nicht kann. 
-  Habe mir den sourcecode trotzdem angeschaut und versucht zu analysieren und mit node.js
-  herumgespielt ob ich auch eine verschlüsselte Kommunikation ohne Fehler hinkriege.
+[![NPM version](http://img.shields.io/npm/v/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
+[![Travis-CI](http://img.shields.io/travis/frankjoke/ioBroker.km200/master.svg)](https://travis-ci.org/frankjoke/ioBroker.km200)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/github/frankjoke/ioBroker.km200?branch=master&svg=true)](https://ci.appveyor.com/project/frankjoke/ioBroker-km200/)
+[![NPM](https://nodei.co/npm/iobroker.km200.png?downloads=true)](https://nodei.co/npm/iobroker.km200/)
 
-  Das ist jetzt in beide Richtungen gelungen und der Adapter ist jetzt schon voll verwendbar.
+[German manual](README_DE.md)
 
-  Das System brauch einen Access-Key um die Daten ver- und entschlüsseln zu können.
-  Leider mußte der Code zur Generierung des Schlüssels wege Urheberrechtlichen Gründen vom Netz genommen werden 
-  aber ein Symcon-Nutzer hat ein eigenes Webtool kreiert mit dem man den Key anfertigen kann.
+The adapter supports the following heating system:
+  
+*  Buderus with the [network adapters](https://www.buderus.de/de/produkte/catalogue/alle-produkte/7719_gateway-logamatic-web-km200-km100-km50) KM50, KM100, KM200 and KM300
+* Junkers with the [network adapter](https://www.bosch-smarthome.com/de/mblani) MB LANi
+* Bosch with the [Network Adapter](https://www.bosch-smarthome.com/en/mblani) MB LANi
 
-  Dazu ist es notwendig zuerst die app auf einem Handy zu installieren und dort das Passwort zu setzen, 
-  die App fragt nach dem Passwort und dem Loginnamen auf dem Gerät und dann kann man sein Passwort setzten.
 
-  Dieses selbst gesetzte Passwort und das Gerätelogin werden dann auf der Webseite [https://ssl-account.com/km200.andreashahn.info/]
-  eingegeben und man erält seinen AccessKey (ein 64 Zeichen langes Hex-String). Dieser ist im Adapterkonfig einzugeben.
-  Der Adapter brauch noch die IP (oder den Netzwerknamen, bei mir 'BuderusKM200.fritz.box') 
-  und die Portadrese (ist 80 am Gerät, aber falls ihr ihn über einen Router geändert habt... ).
+The heating system can be controlled via the Buderus website ([https://www.buderus-connect.de]) or by the 'EasyControl' app from your mobile phone. App and Buderus website also works with Junkers and Bosch heatings systems.
 
-  Da der adapter die daten von der Anlage abfragen muß hab ich ein Update-Intervall definiert, 
-  das ist auf minimum 5 Minuten gesetzt da bei jedem Update alle Daten einzeln abgefragt werden müssen.
+This has now succeeded in both directions and the adapter is already fully usable.
 
-  Meine Anlage (2 Heizkreise und ein Heisswasserkreis) liefert mehr als 150 Datenpunkte wo ich die meisten nicht brauchen kann und manche sind doppelt.
+For this it is necessary to first install the app on a mobile phone and set a private password.
+The app asks for the device password and the login name off the device. 
 
-  Deshalb hab ich eine Blak/Push-List eingeführt um bestimmte Daten ausblenden oder einblenden zu können.
-  Diese Liste besteht aus strings welche zu RegExp geformt werden und die Services in der Heizung werden dann danach gefiltert.
+The adapter still needs the IP (or the network name, for example 'BuderusKM200.fritz.box')
+and the port address (Port 80 on the device, but if you changed it via a router ...).
 
-  Die Syntax ist dass "/irgendwas*" oder "-/irgendwas*" alles ausblendet fas mit "/irgendwas" beginnt und dann beliebige Zeichen (oder nichts) dran hat.
-  Mit "+.*temp*" kann man alles einblenden was 'temp' enthält, und das hat Vorrang gegenüber dem Ausblened!
+Since the adapter must query the data from the system I have defined an update interval,
+This is set to a minimum of 5 minutes since every update requires a separate query.
 
-  Meile Liste schaut so aus `["/gateway*","/recordings*",".*switchPrograms.*","/heatSource*",".*holidayModes.*"]` und blendet ca 90 der ~150 Datensätze meiner Anlage aus.
+My system (2 heating circuits and a hot water circuit) provides more than 150 data points where I can not use most and some are double.
 
-  Seit V 1.1.2 können die Klammern und hochkommas weggelassen werden und die blockierten/gepushten Werte nur mit Beistrich getrennt geschrieben werden!
+That's why I introduced a black / push list to hide or show certain data.
+This list consists of strings which are formed into RegExp and the services in the heater are then filtered afterwards.
 
-  Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
+The syntax is that "/ something *" or "- / something *" everything fades out with "/ something" begins and then any characters (or nothing) has.
+With "+. * Temp *" you can fade in everything that contains 'temp' and that takes precedence over the faded out!
 
-## Important/Wichtig
-* Adapter requires node >= v4.3.*!
+Mile list looks like `` / gateway * ',' / recordings * ','. * SwitchPrograms. * ',' / HeatSource * ','. * HolidayModes. * "]` And hides about 90 of ~ 150 records my plant off.
 
-## Changelog
-### 1.1.6 
-* Adapter communication and retries more often to catch more errors.
+Since V 1.1.2 the brackets and commas can be omitted and the blocked / pushed values ​​can only be written with comma!
+
+The system works with services that are structured like a directory tree and this is replicated in the adapter.
+
+## Important
+* Adapter requires node >= v4.3. 
+
+## changelog
+
+### 1.2.0
+* Integrating Schupu's changes and also make the adapter ready for compact mode
+* Update of adapter should continue to work with old settings
+
+### 1.1.7
+* (Schmupu) Supports Admin3
+* (Schmupu) Only device password and own password needed. You do not have to get the access code anymore.
+
+### 1.1.6
+Adapter communication and retries more often to catch more errors.
 * Writes are also retried
-* Added right text for blocklist in config screen
+Added blocklist text in config screen
 
 ### 1.1.2
 * Adapter handles better communication and retries if he got an error.
 * you can set debug-mode by adding 'debug!' in front of host.
-* Host port is not required and can be added to hostname with :xxx at end.
-* Simpler blocklist handling, does not ask device for services which are blocked
+* Host port is not required and can be added to hostname with: xxx at end.
+* Simpler blocklist handling, which does not ask for device which services are blocked
 
 ### 0.4.3
 * Renamed repository to ioBroker.km200
 
 ### 0.4.3
-* Cleaning of objects/states for current adapter instance which are not part of scanned services anymore.
+Cleaning of objects / states for current adapters instance which are not part of scanned services anymore.
 
 ### 0.4.2
-* Some Small bug fixes and added some debug logs. Removed also dependency of 'request' and 'async' modules.
+* Some small bug fixes and added some debug logs. Removed so dependency of 'request' and 'async' modules.
 
 ### 0.4.1
-  Habe nur 'request' und 'async' mit --save nun auch ins package.json eingetragen... Merken: Nuícht --save vergessen :(!
+  Have only 'request' and 'async' with --save now also registered in the package.json ... Remember: Nuícht --save forget :(!
 
 ### 0.4.0
-  Strings mit allowedValues werden jetzt in beide Richtungen (Lesen & Schreiben) in ioBroker states umgewandelt
+  Strings with allowedValues ​​are now converted to ioBroker states in both directions (read & write)
 
 ### 0.3.0
-  Setzen von Variablen mit Zahlen oder Strings funktioniert nun. 
-  Damit können z.B. Soll-Temperaturen verändert werden. 
-  TODO: Enums und setzen von Tabellen
+  Setting variables with numbers or strings now works.
+  Thus, e.g. Target temperatures are changed.
+  TODO: Enums and set tables
 
 ### 0.2.0
-  Adapter funktioniert jetzt mit Blacklist und im Read-Only mode.
-  TODO: Setzen von Werten im Heizsystem implementieren
-  TODO: Variablen mit ENUMS (Wertelisten) implementieren
+  Adapter now works with blacklist and in read-only mode.
+  TODO: Implement setting values ​​in the heating system
+  TODO: Implement variables with ENUMS (value lists)
 
 ### 0.1.0
-  Erster Test
+  First test
 
 ## License
 The MIT License (MIT)

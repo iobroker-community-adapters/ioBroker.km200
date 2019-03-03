@@ -1,0 +1,11 @@
+{
+    "Description": "Please provide link to KM200 as ip addess or network name! On save adapter restarts with new config immediately",
+    "Gateway Password": "Gateway password or accesskey",
+    "KM200 adapter settings": "",
+    "Private Password": "Private password",
+    "accesskey": "Accesskey generation on Webseite https://ssl-account.com/km200.andreashahn.info/",
+    "address": "Link to KM200",
+    "blacklist": "list of names (can be parts with \"*\") to disable generating states from KM200 like: \"/Gateway*\", \"/recordings/*",
+    "interval": "Intrevall for polling (default 15 minutes, minimum 5 minutes)",
+    "port": "Port (80 default)"
+}
