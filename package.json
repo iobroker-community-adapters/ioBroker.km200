@@ -46,7 +46,8 @@
     "eslint-plugin-react": "^7.12.4",
     "mocha": "^4.1.0",
     "gulp": "^4.0.0",
-    "axios": "^0.18.0"
+    "axios": "^0.18.0",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "bugs": {
     "url": "https://github.com/frankjoke/ioBroker.km200/issues"

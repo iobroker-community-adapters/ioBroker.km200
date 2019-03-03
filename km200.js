@@ -140,6 +140,7 @@ class KM200 {
                     while (s.charCodeAt(s.length - 1) === 0)
                         s = s.slice(0, s.length - 1);
                     o = A.J(s);
+                    adapter.log.debug('Service: ' + service + ' Payload: ' + JSON.stringify(s));
                 } catch (e) {
                     return Promise.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e, 3)}`);
                 }
