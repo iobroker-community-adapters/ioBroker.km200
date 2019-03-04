@@ -185,10 +185,10 @@ class KM200 {
         let post = JSON.stringify({
             value: value
             });
-        post = Buffer.from(post,'utf8').toString('base64');
         post = Array.from(Buffer.from(post,'utf8'));
         post = mcrypt.encrypt(post, null,this.aesKey, 'rijndael-128', 'ecb');
-        post = Buffer.from(post).toString('utf8');
+        post = Buffer.from(post);
+        post = post.toString('base64');
         const opt = A.url('http://' + this.options.hostname + service, this.options);
         opt.headers["Content-Type"] = "application/json";
         opt.path = service;

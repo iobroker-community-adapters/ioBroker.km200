@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "title": "Buderus KM200",
         "desc": {
             "en": "ioBroker Buderus KMx00",
@@ -45,6 +45,10 @@
         ]
     },
     "news": {
+        "1.2.1": {
+            "en": "bug bei set values cortrected",
+            "de": "Fehler bein Setzten der Werte wurde behoben."
+        },
         "1.2.0": {
             "en": "Supports compact mode, Admin3 and gets access key by it self",
             "de": "Compact mode sowie Admin3-Unterstützzung und accesskey kann jetzt intern berechnet werden."

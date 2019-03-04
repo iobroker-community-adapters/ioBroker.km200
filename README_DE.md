@@ -47,7 +47,11 @@ Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind u
 * Adapter requires node >= v6.*.*!
 
 ## Changelog
-1.2.0 
+1.2.1 
+* Adapter unterstützt neuen 'Compact'-Mode von js-controller2
+* Adapter benutzt nicht mehr mcrypt wodurch er auf allen Platformen nutzbar wird
+* Adapter versteht speziellen debug-Mode mit '!' am Ende der Adresse
+* Adapter braucht node >=v6
 
 ### 1.1.7
 * (Schmupu) Supports Admin3

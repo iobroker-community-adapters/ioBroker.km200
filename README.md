@@ -51,6 +51,13 @@ The system works with services that are structured like a directory tree and thi
 
 ## changelog
 
+###1.2.1 
+* Adapter supports now compact mopde
+* Adapter uses other module and removes need for mcrypt which makes it working on all platforms
+* Adapter can now have debug mode set via '!' at end of address
+* Adapter needs node >=v6
+
+
 ### 1.2.0
 * Integrating Schupu's changes and also make the adapter ready for compact mode
 * Update of adapter should continue to work with old settings
