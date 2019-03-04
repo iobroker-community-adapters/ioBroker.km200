@@ -724,8 +724,7 @@ class MyAdapter {
         return fn(arg).catch(err => nretry <= 0 ? this.reject(err) : this.retry(nretry - 1, fn, arg));
     }
 
-    static
-    while ( /** function */ fw, /** function */ fn, /** number */ time) {
+    static while ( /** function */ fw, /** function */ fn, /** number */ time) {
         assert(typeof fw === 'function' && typeof fn === 'function', 'retry (fw,fn,) error: fw or fn is not a function!');
         time = parseInt(time) || 0;
         return !fw() ? this.resolve(true) :

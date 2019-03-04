@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "1.1.9",
+        "version": "1.2.0",
         "title": "Buderus KM200",
         "desc": {
             "en": "ioBroker Buderus KMx00",
@@ -21,11 +21,11 @@
         "icon": "km200.png",
         "materialize": true,
         "compact": true,
-        "enabled": false,
+        "enabled": true,
         "extIcon": "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
         "keywords": [
             "Buderus",
-            "KM200",
+            "KM200","KM50","KM100","KM300","Junkers","Bosch",
             "vis",
             "GUI",
             "graphical",
@@ -46,8 +46,8 @@
     },
     "news": {
         "1.2.0": {
-            "en": "Supports compact mode and gets access key by it self",
-            "de": "Compact mode Unterstützzung und "
+            "en": "Supports compact mode, Admin3 and gets access key by it self",
+            "de": "Compact mode sowie Admin3-Unterstützzung und accesskey kann jetzt intern berechnet werden."
         },
         "1.1.7": {
             "en": "Supports Admin3 and getting access key by it self",

@@ -27,6 +27,8 @@ The app asks for the device password and the login name off the device.
 The adapter still needs the IP (or the network name, for example 'BuderusKM200.fritz.box')
 and the port address (Port 80 on the device, but if you changed it via a router ...).
 
+If you add an '!' at the end of the address the adapter will work in debug mode and provide a lot of information!
+
 Since the adapter must query the data from the system I have defined an update interval,
 This is set to a minimum of 5 minutes since every update requires a separate query.
 

@@ -404,7 +404,7 @@ function createStates() {
 }
 
 function updateStates(items) {
-    A.Df('updateStates: %O @%s', items,new Date());
+    A.Df('updateStates: %O @%s', !items ? 'all' : items,new Date());
     if (typeof items === 'string') {
         if (items.startsWith(A.ain))
             items = items.slice(A.ain.length, items.length);
@@ -467,7 +467,7 @@ function main() {
                     need to be an Array with []`);
 
     A.I(`Interval=${A.C.interval} min, Black/Push-list: ${blacklist}`);
-
+    A.clearStates();
     km200.getServices()
         .then((obj) => {
             if (!obj || Object.keys(obj).length === 0) {
@@ -479,9 +479,9 @@ function main() {
             A.I(`Services found: ${Object.keys(obj).length}`);
             return createStates();
         })
-        .then(() => A.cleanup())
         .catch(e => A.Wf('INit error %O', e))
         .then(() => updateStates())
-        .then(() => A.timer = setInterval(updateStates, Number(A.C.interval) * 1000 * 60));
+        .then(() => A.timer = setInterval(updateStates, Number(A.C.interval) * 1000 * 60))
+        .then(() => A.cleanup());
 
 }

@@ -24,6 +24,7 @@ die App fragt nach dem Geräte Passwort und dem Loginnamen auf dem Gerät und da
 
 Der Adapter braucht noch die IP (oder den Netzwerknamen, bei mir 'BuderusKM200.fritz.box') 
 und die Portadrese (ist 80 am Gerät, aber falls ihr ihn über einen Router geändert habt... ).
+Wenn man ein Rufzeichen `!` hinter die Adresse stellt schaltet der Adapter auf Debug-Mode und schreibt Zusatzinformationen ins log.
 
 Da der adapter die daten von der Anlage abfragen muß hab ich ein Update-Intervall definiert, 
 das ist auf minimum 5 Minuten gesetzt da bei jedem Update alle Daten einzeln abgefragt werden müssen.
