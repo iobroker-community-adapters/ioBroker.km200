@@ -826,7 +826,7 @@ class MyAdapter {
                 //                req && req.removeAllListeners();
                 if (req && !req.aborted) req.abort();
                 //                res && res.destroy();
-                MyAdapter.D('err in response:' + msg);
+//                MyAdapter.Df('err in response: %s = %O', msg);
                 return reject(msg);
             }
 
