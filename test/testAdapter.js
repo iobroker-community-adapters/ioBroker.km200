@@ -9,8 +9,7 @@ var onStateChanged = null;
 var onObjectChanged = null;
 var sendToID = 1;
 
-var adapterShortName = setup.adapterName.substring(setup.adapterName.indexOf('.') + 1);
-var runningMode = require(__dirname + '/../io-package.json').common.mode;
+var adapterShortName = setup.adapterName.substring(setup.adapterName.indexOf('.')+1);
 
 function checkConnectionOfAdapter(cb, counter) {
     counter = counter || 0;
@@ -99,25 +98,24 @@ describe('Test ' + adapterShortName + ' adapter', function() {
         });
     });
 
-    it('Test ' + adapterShortName + ' instance object: it must exists', function (done) {
-        objects.getObject('system.adapter.' + adapterShortName + '.0', function (err, obj) {
-            expect(err).to.be.null;
-            expect(obj).to.be.an('object');
-            expect(obj).not.to.be.null;
-            done();
-        });
-    });
-
+/*
+    ENABLE THIS WHEN ADAPTER RUNS IN DEAMON MODE TO CHECK THAT IT HAS STARTED SUCCESSFULLY
+*/
     it('Test ' + adapterShortName + ' adapter: Check if adapter started', function (done) {
         this.timeout(60000);
         checkConnectionOfAdapter(function (res) {
             if (res) console.log(res);
-            if (runningMode === 'daemon') {
-                expect(res).not.to.be.equal('Cannot check connection');
-            } else {
-                //??
-            }
-            done();
+            expect(res).not.to.be.equal('Cannot check connection');
+            objects.setObject('system.adapter.test.0', {
+                    common: {
+
+                    },
+                    type: 'instance'
+                },
+                function () {
+                    states.subscribeMessage('system.adapter.test.0');
+                    done();
+                });
         });
     });
 /**/

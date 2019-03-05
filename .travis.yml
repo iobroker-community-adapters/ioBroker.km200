@@ -1,6 +1,6 @@
 os:
   - linux
-  - ios
+  - osx
   - windows
 language: node_js
 node_js:
@@ -21,3 +21,5 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.9
+      - libusb-1.0-0.dev
+      - libudev-dev

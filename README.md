@@ -1,7 +1,8 @@
 # ioBroker.km200
 
-![Logo](admin/km200.png)
 ## ioBroker adapter Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi
+
+![Logo](admin/km200.png)
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)

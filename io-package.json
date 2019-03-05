@@ -33,9 +33,6 @@
         ],
         "readme": "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
         "type": "climate-control",
-        "restartAdapters": [
-            "no_vis"
-        ],
         "license": "MIT",
         "authors": [
             {
