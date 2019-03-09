@@ -44,10 +44,18 @@ Seit V 1.1.2 können die Klammern und hochkommas weggelassen werden und die bloc
 
 Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind und diese wird im Adapter nachgebildet.
 
+### Wichtig falls Adapter von Version 1.1.* upgedated wird
+
+Sie Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges privates Passwort, es darf nur nicht leer sein!
+
 ## Important/Wichtig
 * Adapter requires node >= v6.*.*!
 
 ## Changelog
+
+### 1.2.2
+* Adapter funktioniert auch nur mit accesskey im alten hex-format ohne private passwort.
+
 ### 1.2.1 
 * Adapter unterstützt neuen 'Compact'-Mode von js-controller2
 * Adapter benutzt nicht mehr mcrypt wodurch er auf allen Platformen nutzbar wird

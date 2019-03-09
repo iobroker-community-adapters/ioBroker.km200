@@ -6,7 +6,7 @@
 /*jshint -W030*/
 //// jxshint node:true, esversion:6, strict:true, undef:true, unused:true
 "use strict";
-const  crypto = require('crypto'),
+const crypto = require('crypto'),
     mcrypt = require('js-rijndael'),
     A = require('./myAdapter').MyAdapter;
 
@@ -88,11 +88,11 @@ class KM200 {
         }
 
 
-        if (!accessUrl || !gwpw || !prpw)
+        if (!accessUrl || !gwpw)
             return A.W(`KM200.init argument error:init(${accessUrl},  GW:${gwpw}, PW:${prpw}), no init done!`);
         this.aesKey = (/^[0-9a-f]{64}$/.test(gwpw)) ? gwpw : getAccesskey(gwpw, prpw);
         this.aesKey = Buffer.from(this.aesKey, 'hex');
-        this.aesKey =  Array.from(this.aesKey);
+        this.aesKey = Array.from(this.aesKey);
         this.scannedServices = null;
         this.blocked = [];
         this.options = {
@@ -169,7 +169,7 @@ class KM200 {
                 let o = null;
                 try {
                     let s = Array.from(b);
-                    s = mcrypt.decrypt(s, null,this.aesKey, 'rijndael-128', 'ecb');
+                    s = mcrypt.decrypt(s, null, this.aesKey, 'rijndael-128', 'ecb');
                     s = Buffer.from(s).toString('utf8');
                     o = A.J(s);
                 } catch (e) {
@@ -184,9 +184,9 @@ class KM200 {
     set(service, value) {
         let post = JSON.stringify({
             value: value
-            });
-        post = Array.from(Buffer.from(post,'utf8'));
-        post = mcrypt.encrypt(post, null,this.aesKey, 'rijndael-128', 'ecb');
+        });
+        post = Array.from(Buffer.from(post, 'utf8'));
+        post = mcrypt.encrypt(post, null, this.aesKey, 'rijndael-128', 'ecb');
         post = Buffer.from(post);
         post = post.toString('base64');
         const opt = A.url('http://' + this.options.hostname + service, this.options);
@@ -353,14 +353,20 @@ function createStates() {
                 t = 'string';
                 w = false;
                 break;
-            case 'switchProgram':
+/*
+                case 'switchProgram':
                 v = o.switchPoints;
                 o.valIs = "switchPoints";
                 t = 'array';
                 w = false;
                 break;
+*/
             default: // don't process others'
-                return Promise.resolve(null);
+                v = A.O(o.values);
+                o.valIs = "values";
+                t = 'string';
+                w = false;
+//                return Promise.resolve(null);
         }
         if (u === 'mins') {
             t = 'string';
@@ -404,7 +410,7 @@ function createStates() {
 }
 
 function updateStates(items) {
-    A.Df('updateStates: %O @%s', !items ? 'all' : items,new Date());
+    A.Df('updateStates: %O @%s', !items ? 'all' : items, new Date());
     if (typeof items === 'string') {
         if (items.startsWith(A.ain))
             items = items.slice(A.ain.length, items.length);
@@ -451,8 +457,8 @@ function main() {
     }
 
 
-    if (!A.C.privatepassword || !A.C.accesskey)
-        return A.W(`Gateway or private password missing!`);
+    if (!A.C.accesskey)
+        return A.W(`Gateway or access missing!`);
 
     A.I(`${A.ains} address: http://${A.C.adresse}`);
 
