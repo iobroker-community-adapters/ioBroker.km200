@@ -126,16 +126,16 @@ class KM200 {
         for (let li of list) {
             let ispush = false;
             if (li.startsWith('+')) {
-                li = li.slice(1, li.length);
+                li = li.slice(1);
                 ispush = true;
             } else if (li.startsWith('-'))
-                li = li.slice(1, li.length);
+                li = li.slice(1);
             if (!li.startsWith('^/')) {
                 if (!li.startsWith('/')) {
                     if (!li.startsWith('^'))
                         li = '^/' + li;
                     else
-                        li = '^/' + li.slice(1, li.length);
+                        li = '^/' + li.slice(1);
                 } else
                     li = '^' + li;
             }
@@ -143,7 +143,7 @@ class KM200 {
                 li += '$';
             const j = li.indexOf('*');
             if (j > 1 && li[j - 1] !== '.')
-                li = li.slice(0, j) + '.' + li.slice(j, li.length);
+                li = li.slice(0, j) + '.' + li.slice(j);
             (ispush ? this.pushed : this.blocked).push(A.D(`add to ${ispush ? 'pushed' : 'blocked'} ${li}`, new RegExp(li)));
         }
     }
@@ -177,6 +177,7 @@ class KM200 {
                 }
                 if (o && o.references)
                     o = o.references;
+                //                    A.If('Service:%s was %O',service,o);
                 return o;
             }, (err) => err.indexOf('status 403/') > 0 ? A.resolve() : A.reject(err)));
         //        A.D(A.O(opt));
@@ -208,6 +209,7 @@ class KM200 {
     }
 
     getServices(service) {
+        const self = this;
         let level = false;
         if (!service) {
             service = this.basicServices;
@@ -216,11 +218,11 @@ class KM200 {
         }
         if (!Array.isArray(service))
             return A.reject(A.I(`Invalid (not Array) getService for ${A.O(service)}`));
-        A.D(`try to get services for ${A.O(service)}`);
+//        A.D(`try to get services for ${A.O(service)}`);
         return A.seriesOf(service, (item) => {
-            if (this.isBlocked(item))
+            if (self.isBlocked(item))
                 return Promise.resolve(null);
-            return this.get(item)
+            return self.get(item)
                 .then((data) => {
                     //                    A.D(`get returned ${A.O(data)}`)
                     if (!data)
@@ -232,14 +234,14 @@ class KM200 {
                                 return this.getServices([di.id]);
                             return A.resolve();
                         }, 10);
-                    } else if (!this.isBlocked(item)) {
-                        if (data.setpointProperty)
-                            return this.getServices(A.D(`setPointProperty = ${data.setpointProperty.id}`, [data.setpointProperty.id]));
-                        if (data.recordedResource)
-                            return this.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id]));
-                        const d = item.split('/').slice(1).join('.');
-                        this.scannedServices[d] = data;
-                        return Promise.resolve(A.D(`Service[${d}]=${A.O(data)}`, null));
+                    } else if (!self.isBlocked(item)) {
+                        A.resolve().then(() => data.setpointProperty ? self.getServices(A.D(`setPointProperty = ${data.setpointProperty.id}`, [data.setpointProperty.id])) : null)
+                            .then(() => data.recordedResource ? self.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id])) : null)
+                            .then(() => {
+                                const d = item.split('/').slice(1).join('.');
+                                self.scannedServices[d] = data;
+                                return Promise.resolve(A.D(`Service[${d}]=${A.O(data)}`, null));
+                            }).catch(e => A.Wf('Error in getservice: %O', e));
                     }
 
                     return null;
@@ -248,11 +250,11 @@ class KM200 {
             if (!level) return A.resolve();
             const s = Object.keys(this.scannedServices);
             if (s.length === 0)
-                return A.W(`Did not get any Services from KLM200!: ${A.O(this.scannedServices)}`);
+                return A.W(`Did not get any Services from KLM200!: ${A.O(self.scannedServices)}`);
             const ns = {};
             for (let i of s.sort())
-                ns[i] = this.scannedServices[i];
-            this.scannedServices = ns;
+                ns[i] = self.scannedServices[i];
+            self.scannedServices = ns;
             return ns;
         });
     }
@@ -353,20 +355,24 @@ function createStates() {
                 t = 'string';
                 w = false;
                 break;
-/*
-                case 'switchProgram':
-                v = o.switchPoints;
+            case 'switchProgram':
+                v = A.O(o.switchPoints);
                 o.valIs = "switchPoints";
-                t = 'array';
+                t = 'string';
                 w = false;
                 break;
-*/
-            default: // don't process others'
-                v = A.O(o.values);
+            case 'yRecording':
+                v = A.O(o.recording);
                 o.valIs = "values";
                 t = 'string';
                 w = false;
-//                return Promise.resolve(null);
+                break;
+            default: // put others in pure objects'
+                v = A.O(o,4);
+                o.valIs = "values";
+                t = 'string';
+                w = false;
+                //                return Promise.resolve(null);
         }
         if (u === 'mins') {
             t = 'string';

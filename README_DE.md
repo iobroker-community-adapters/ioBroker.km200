@@ -53,6 +53,10 @@ Sie Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges private
 
 ## Changelog
 
+### 1.2.3
+* Habe Änderungen vorgenommen um auch switchPrograms anzuzeigen
+
+
 ### 1.2.2
 * Adapter funktioniert auch nur mit accesskey im alten hex-format ohne private passwort.
 

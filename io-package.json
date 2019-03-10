@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "1.2.2",
+        "version": "1.2.3",
         "title": "Buderus KM200",
         "desc": {
             "en": "ioBroker Buderus KMx00",
@@ -42,6 +42,10 @@
         ]
     },
     "news": {
+        "1.2.3": {
+            "en": "Implemented a correction to show also switchPrograms",
+            "de": "Habe Änderungen vorgenommen um auch switchPrograms anzuzeigen"
+        },
         "1.2.2": {
             "en": "Allowed adapter to use no valid password if 64 character accesskey is provided",
             "de": "Wen nur 64-Zeichen access-key verfügbar ist braucht kein gültiges passwort vorhanden sein, es sollte aber trotzdem nicht leer sein!"

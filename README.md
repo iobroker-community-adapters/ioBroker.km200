@@ -13,7 +13,7 @@
 
 The adapter supports the following heating system:
   
-*  Buderus with the [network adapters](https://www.buderus.de/de/produkte/catalogue/alle-produkte/7719_gateway-logamatic-web-km200-km100-km50) KM50, KM100, KM200 and KM300
+* Buderus with the [network adapters](https://www.buderus.de/de/produkte/catalogue/alle-produkte/7719_gateway-logamatic-web-km200-km100-km50) KM50, KM100, KM200 and KM300
 * Junkers with the [network adapter](https://www.bosch-smarthome.com/de/mblani) MB LANi
 * Bosch with the [Network Adapter](https://www.bosch-smarthome.com/en/mblani) MB LANi
 
@@ -55,6 +55,9 @@ If you have entered the 64-character access-key you don't need the password, but
 * Adapter requires node >= v6.* 
 
 ## changelog
+
+### 1.2.3 
+* Implemented a correction to show also switchPrograms
 
 ### 1.2.2
 * Adapter works also only with accesskey iin old 64 digit hex format without private passwort.
