@@ -16,7 +16,12 @@
   "license": "MIT",
   "keywords": [
     "ioBroker",
-    "KM200","KM50","KM100","KM300","Junkers","Bosch",
+    "KM200",
+    "KM50",
+    "KM100",
+    "KM300",
+    "Junkers",
+    "Bosch",
     "Buderus",
     "Smart Home",
     "home automation"
@@ -29,6 +34,7 @@
     "url": "https://github.com/frankjoke/ioBroker.km200"
   },
   "dependencies": {
+    "@frankjoke/myadapter": "^1.0.1",
     "@iobroker/adapter-core": "^1.0.3",
     "js-rijndael": "^1.0.0"
   },

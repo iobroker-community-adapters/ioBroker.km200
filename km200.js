@@ -8,7 +8,7 @@
 "use strict";
 const crypto = require('crypto'),
     mcrypt = require('js-rijndael'),
-    A = require('./myAdapter').MyAdapter;
+    A = require('@frankjoke/myadapter').MyAdapter;
 
 const km200_crypt_md5_salt = new Uint8Array([
     0x86, 0x78, 0x45, 0xe9, 0x7c, 0x4e, 0x29, 0xdc,
