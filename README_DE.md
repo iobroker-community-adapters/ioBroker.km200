@@ -6,9 +6,13 @@
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
 ![Number of Installations](http://iobroker.live/badges/km200.svg) ![Number of Installations](http://iobroker.live/badges/km200.svg)
+[![NPM version](http://img.shields.io/npm/v/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.km200.svg)](https://www.npmjs.com/package/iobroker.km200)
 [![Travis-CI](http://img.shields.io/travis/frankjoke/ioBroker.km200/master.svg)](https://travis-ci.org/frankjoke/ioBroker.km200)
 [![NPM](https://nodei.co/npm/iobroker.km200.png?downloads=true)](https://nodei.co/npm/iobroker.km200/)
+[![Number of Installations](http://iobroker.live/badges/km200-installed.svg)](http://iobroker.live/badges/km200-installed.svg)
+[![Number of Installations no installed](http://iobroker.live/badges/km200.svg)](http://iobroker.live/badges/km200.svg)
+
   
 [Englische Anleitung](README.md)  
 
