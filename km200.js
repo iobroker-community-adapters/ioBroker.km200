@@ -33,7 +33,9 @@ class KM200 {
             "/recordings",
             "/solarCircuits",
             "/system",
+            "/notifications"
         ];
+        this.recNames = ['Today', 'Yesterday', 'ThisMonth', 'LastMonth', 'ThisYear', 'LastYear'];
     }
 
 
@@ -157,11 +159,52 @@ class KM200 {
     get(service) {
         if (!service || service.length < 2 || service[0] !== '/')
             return A.reject(A.W(`KM200.get service parameter not as requested '${A.O(service)}'`));
+        const oservice =service;
+        const lasts = service.split('/').slice(-1)[0];
+        let ns;
+        if (service.startsWith('/recordings/') && this.recNames.indexOf(lasts) >= 0) {
+            const date = new Date();
+            ns = service.split('/').slice(0, -1);
+            let nsn = ns[ns.length - 1]; // keep last to expand
+            nsn += '?interval=';
+            switch (lasts) {
+                case 'Today':
+                    nsn += A.dateTime(date).slice(0, 10);
+                    break;
+                case 'Yesterday':
+                    date.setDate(date.getDate() - 1);
+                    nsn += A.dateTime(date).slice(0, 10);
+                    break;
+                case 'ThisMonth':
+                    nsn += A.dateTime(date).slice(0, 7);
+                    break;
+                case 'LastMonth':
+                    date.setDate(1);
+                    date.setMonth(date.getMonth() - 1);
+                    nsn += A.dateTime(date).slice(0, 7);
+                    break;
+                case 'ThisYear':
+                    nsn += A.dateTime(date).slice(0, 4);
+                    break;
+                case 'LastYear':
+                    date.setDate(1);
+                    date.setMonth(1);
+                    date.setFullYear(date.getFullYear() - 1);
+                    nsn += A.dateTime(date).slice(0, 4);
+                    break;
+                default:
+                    break; // should never happen
+            }
+            //            A.If('Get recordings from service %s for %s', service, nsn, date);
+            ns[ns.length - 1] = nsn;
+            service = ns.join('/');
+//            A.If('Get recordings from service %s', service, ns);
+        }
         const opt = A.url('http://' + this.options.hostname + service, this.options);
         opt.method = 'GET';
         //        opt.url = opt.hostname + service;
         opt.status = [200, 403];
-        return A.retry(3, () => A.request(opt)
+        return A.retry(4, () => A.wait(20).then(() => A.request(opt))
             .then((data) => {
                 if (!data)
                     return Promise.reject(`No Data for ${service}!`);
@@ -175,11 +218,20 @@ class KM200 {
                 } catch (e) {
                     return A.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e, 3)}`);
                 }
+                if (o.type === 'yRecording' && o.recording && o.recording.length>0) {
+                    o.type = 'arrayData';
+                    o.values =  o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / x.c) / 1000.0 : NaN);
+                    delete o.recordedResource;
+                    delete o.recording;
+                    o.id = oservice;
+//                    A.Df('get recordings for service %s was %O', service, o);
+                    return o;
+                }
                 if (o && o.references)
                     o = o.references;
                 //                    A.If('Service:%s was %O',service,o);
                 return o;
-            }, (err) => err.indexOf('status 403/') > 0 ? A.resolve() : A.reject(err)));
+            }, (err) => err.indexOf('status 403/') > 0 ? A.resolve() : A.reject(err))).catch(e => A.Wf('Error in get service data: %O',e));
         //        A.D(A.O(opt));
     }
     set(service, value) {
@@ -218,7 +270,7 @@ class KM200 {
         }
         if (!Array.isArray(service))
             return A.reject(A.I(`Invalid (not Array) getService for ${A.O(service)}`));
-//        A.D(`try to get services for ${A.O(service)}`);
+        //        A.D(`try to get services for ${A.O(service)}`);
         return A.seriesOf(service, (item) => {
             if (self.isBlocked(item))
                 return Promise.resolve(null);
@@ -236,17 +288,20 @@ class KM200 {
                         }, 10);
                     } else if (!self.isBlocked(item)) {
                         A.resolve().then(() => data.setpointProperty ? self.getServices(A.D(`setPointProperty = ${data.setpointProperty.id}`, [data.setpointProperty.id])) : null)
-                            .then(() => data.recordedResource ? self.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id])) : null)
+//                            .then(() => data.recordedResource ? self.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id])) : null)
                             .then(() => {
                                 const d = item.split('/').slice(1).join('.');
-                                self.scannedServices[d] = data;
+                                if (data.recordedResource) {
+                                    return self.getServices(self.recNames.map(i => item + '/' + i));
+                                } else
+                                    self.scannedServices[d] = data;
                                 return Promise.resolve(A.D(`Service[${d}]=${A.O(data)}`, null));
                             }).catch(e => A.Wf('Error in getservice: %O', e));
                     }
 
                     return null;
                 }).catch((err) => A.D(`could not get data for '${item} with err=${err}`));
-        }, 10).then(() => {
+        }, 20).then(() => {
             if (!level) return A.resolve();
             const s = Object.keys(this.scannedServices);
             if (s.length === 0)
@@ -362,13 +417,13 @@ function createStates() {
                 w = false;
                 break;
             case 'yRecording':
-                v = A.O(o.recording);
+                v = o.values;
                 o.valIs = "values";
-                t = 'string';
+                t = 'array';
                 w = false;
                 break;
             default: // put others in pure objects'
-                v = A.O(o,4);
+                v = A.O(o, 4);
                 o.valIs = "values";
                 t = 'string';
                 w = false;

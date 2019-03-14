@@ -56,6 +56,10 @@ If you have entered the 64-character access-key you don't need the password, but
 
 ## changelog
 
+### 1.2.4
+
+* Beta for next version, recordings supported
+
 ### 1.2.3 
 * Implemented a correction to show also switchPrograms
 

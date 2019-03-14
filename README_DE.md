@@ -58,6 +58,10 @@ Sie Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges private
 
 ## Changelog
 
+### 1.2.4
+
+* Betaversion für nächstes Update. Es werden jetzt auch die 'recordings' ausgelesen!
+
 ### 1.2.3
 * Habe Änderungen vorgenommen um auch switchPrograms anzuzeigen
 
