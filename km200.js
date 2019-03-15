@@ -35,7 +35,7 @@ class KM200 {
             "/system",
             "/notifications"
         ];
-        this.recNames = ['Today', 'Yesterday', 'ThisMonth', 'LastMonth', 'ThisYear', 'LastYear'];
+        this.recNames = ['_Hours', '_Days', '_Months', '_2daysBefore', '_Today', '_Yesterday', '_2monthBefore', '_ThisMonth', '_LastMonth', '_2yearsBefore', '_ThisYear', '_LastYear'];
     }
 
 
@@ -99,7 +99,7 @@ class KM200 {
         this.blocked = [];
         this.options = {
             hostname: accessUrl,
-            timeout: 5000,
+            timeout: 2000,
             status: [200],
             encoding: 'utf8',
             port: 80,
@@ -157,9 +157,38 @@ class KM200 {
      *
      */
     get(service) {
+        const self = this;
+
+
+        function get2(ns, n, s1, s2, s3) {
+            s1 = ns.concat(s1).join('/');
+            s2 = ns.concat(s2).join('/');
+            s3 = s3 ? ns.concat(s3).join('/') : null;
+            n = ns.concat(n).join('/');
+            return self.get(s1).then(x => s1 = x, () => s1 = {
+                values: []
+            }).then(() => self.get(s2)).then(x => s2 = x, () => s2 = {
+                values: []
+            }).then(() => s3 ? self.get(s3) : {
+                values: []
+            }).then(x => s3 = x, () => s3 = {
+                values: []
+            }).then(() => {
+                ns = s1 && s1.values ? s1.values : [];
+                s1 = s1 && s1.id ? s1 : s2;
+                s1.id = n;
+                ns = ns.concat(s2.values, s3.values);
+                while (ns.length > 0 && isNaN(ns[0]))
+                    ns.shift();
+                while (ns.length > 0 && isNaN(ns[ns.length - 1]))
+                    ns.pop();
+                s1.values = ns;
+                return s1;
+            });
+        }
         if (!service || service.length < 2 || service[0] !== '/')
             return A.reject(A.W(`KM200.get service parameter not as requested '${A.O(service)}'`));
-        const oservice =service;
+        const oservice = service;
         const lasts = service.split('/').slice(-1)[0];
         let ns;
         if (service.startsWith('/recordings/') && this.recNames.indexOf(lasts) >= 0) {
@@ -168,25 +197,46 @@ class KM200 {
             let nsn = ns[ns.length - 1]; // keep last to expand
             nsn += '?interval=';
             switch (lasts) {
-                case 'Today':
+                case '_Hours':
+                    return get2(ns, lasts, '_2daysBefore', '_Yesterday', '_Today');
+                case '_Days':
+                    return get2(ns, lasts, '_2monthBefore', '_LastMonth', '_ThisMonth', lasts);
+                case '_Months':
+                    return get2(ns, lasts, '_2yearsBefore', '_LastYear', '_ThisYear');
+                case '_Today':
                     nsn += A.dateTime(date).slice(0, 10);
                     break;
-                case 'Yesterday':
+                case '_Yesterday':
                     date.setDate(date.getDate() - 1);
                     nsn += A.dateTime(date).slice(0, 10);
                     break;
-                case 'ThisMonth':
+                case '_2daysBefore':
+                    date.setDate(date.getDate() - 2);
+                    nsn += A.dateTime(date).slice(0, 10);
+                    break;
+                case '_ThisMonth':
                     nsn += A.dateTime(date).slice(0, 7);
                     break;
-                case 'LastMonth':
+                case '_LastMonth':
                     date.setDate(1);
                     date.setMonth(date.getMonth() - 1);
                     nsn += A.dateTime(date).slice(0, 7);
                     break;
-                case 'ThisYear':
+                case '_2monthBefore':
+                    date.setDate(1);
+                    date.setMonth(date.getMonth() - 2);
+                    nsn += A.dateTime(date).slice(0, 7);
+                    break;
+                case '_ThisYear':
                     nsn += A.dateTime(date).slice(0, 4);
                     break;
-                case 'LastYear':
+                case '_2yearsBefore':
+                    date.setDate(1);
+                    date.setMonth(1);
+                    date.setFullYear(date.getFullYear() - 2);
+                    nsn += A.dateTime(date).slice(0, 4);
+                    break;
+                case '_LastYear':
                     date.setDate(1);
                     date.setMonth(1);
                     date.setFullYear(date.getFullYear() - 1);
@@ -198,40 +248,41 @@ class KM200 {
             //            A.If('Get recordings from service %s for %s', service, nsn, date);
             ns[ns.length - 1] = nsn;
             service = ns.join('/');
-//            A.If('Get recordings from service %s', service, ns);
+            //            A.If('Get recordings from service %s', service, ns);
         }
         const opt = A.url('http://' + this.options.hostname + service, this.options);
         opt.method = 'GET';
         //        opt.url = opt.hostname + service;
         opt.status = [200, 403];
-        return A.retry(4, () => A.wait(20).then(() => A.request(opt))
-            .then((data) => {
-                if (!data)
-                    return Promise.reject(`No Data for ${service}!`);
-                const b = new Buffer(data, 'base64');
-                let o = null;
-                try {
-                    let s = Array.from(b);
-                    s = mcrypt.decrypt(s, null, this.aesKey, 'rijndael-128', 'ecb');
-                    s = Buffer.from(s).toString('utf8');
-                    o = A.J(s);
-                } catch (e) {
-                    return A.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e, 3)}`);
-                }
-                if (o.type === 'yRecording' && o.recording && o.recording.length>0) {
-                    o.type = 'arrayData';
-                    o.values =  o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / x.c) / 1000.0 : NaN);
-                    delete o.recordedResource;
-                    delete o.recording;
-                    o.id = oservice;
-//                    A.Df('get recordings for service %s was %O', service, o);
-                    return o;
-                }
-                if (o && o.references)
-                    o = o.references;
-                //                    A.If('Service:%s was %O',service,o);
-                return o;
-            }, (err) => err.indexOf('status 403/') > 0 ? A.resolve() : A.reject(err))).catch(e => A.Wf('Error in get service data: %O',e));
+        return A.retry(4, () => A.wait(10).then(() => A.request(opt))
+                .then((data) => {
+                    if (!data)
+                        return Promise.reject(`No Data for ${service}!`);
+                    const b = new Buffer(data, 'base64');
+                    let o = null;
+                    try {
+                        let s = Array.from(b);
+                        s = mcrypt.decrypt(s, null, this.aesKey, 'rijndael-128', 'ecb');
+                        s = Buffer.from(s).toString('utf8');
+                        o = A.J(s);
+                    } catch (e) {
+                        return A.reject(`KM200 response Error  for ${service}, most probabloy Key not accepted :${A.O(e, 3)}`);
+                    }
+                    if (o.type === 'yRecording' && o.recording && o.recording.length > 0) {
+                        o.type = 'arrayData';
+                        o.values = o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / x.c) / 1000.0 : NaN);
+                        delete o.recordedResource;
+                        delete o.recording;
+                        o.id = oservice;
+                        //                    A.Df('get recordings for service %s was %O', service, o);
+                        return o;
+                    }
+                    if (o && o.references)
+                        o = o.references;
+                    //                    A.If('Service:%s was %O',service,o);
+                    return Promise.resolve(o);
+                }))
+            .catch(e => A.Wf('Error in get service data: %O', e));
         //        A.D(A.O(opt));
     }
     set(service, value) {
@@ -288,11 +339,11 @@ class KM200 {
                         }, 10);
                     } else if (!self.isBlocked(item)) {
                         A.resolve().then(() => data.setpointProperty ? self.getServices(A.D(`setPointProperty = ${data.setpointProperty.id}`, [data.setpointProperty.id])) : null)
-//                            .then(() => data.recordedResource ? self.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id])) : null)
+                            //                            .then(() => data.recordedResource ? self.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id])) : null)
                             .then(() => {
                                 const d = item.split('/').slice(1).join('.');
                                 if (data.recordedResource) {
-                                    return self.getServices(self.recNames.map(i => item + '/' + i));
+                                    return self.getServices(self.recNames.slice(0, 3).map(i => item + '/' + i));
                                 } else
                                     self.scannedServices[d] = data;
                                 return Promise.resolve(A.D(`Service[${d}]=${A.O(data)}`, null));
@@ -354,14 +405,14 @@ A.stateChange = function (id, state) {
         }, (err) => A.W(`Set KM200 err: ${A.O(err)}`, err))
         .then(() => (A.wait(2000).then(() => updateStates(id)), true));
 };
-
+/*
 function minutes(min) {
     const val = min * 1000 * 60;
     const d = Math.floor(val / (1000 * 60.0 * 60 * 24));
     return (d > 0 ? d.toString() + "-" : "") + new Date(val).toUTCString().split(" ")[4].slice(0, 5);
 
 }
-
+*/
 function createStates() {
     states = {};
     // I got Types:{ floatValue: 89, stringValue: 36, switchProgram: 4, systeminfo: 3, errorList: 1, yRecording: 8, arrayData: 5 }
@@ -429,10 +480,12 @@ function createStates() {
                 w = false;
                 //                return Promise.resolve(null);
         }
+/*
         if (u === 'mins') {
             t = 'string';
             v = minutes(parseInt(v));
         }
+*/        
         const c = {
             type: 'state',
             id: n,
@@ -493,8 +546,8 @@ function updateStates(items) {
                     val = data.allowedValues.indexOf(data.value);
                 else
                     val = data[km.valIs];
-                if (km.unitOfMeasure === 'mins')
-                    val = minutes(parseInt(val));
+//                if (km.unitOfMeasure === 'mins')
+//                    val = minutes(parseInt(val));
                 return A.makeState(n, val, true);
             }).catch((err) => A.I(`Update State ${n} err: ${A.O(err)}`));
     }, 5);
