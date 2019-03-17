@@ -3,6 +3,7 @@
         "name": "km200",
         "version": "1.9.9",
         "title": "Buderus KM200",
+        "titleLang": "Heating system adapter for Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi",
         "desc": {
             "en": "ioBroker Buderus KMx00",
             "de": "ioBroker Buderus KMx00",
@@ -39,46 +40,46 @@
                 "name": "Frank Joke",
                 "email": "frankjoke@hotmail.com"
             }
-        ]
-    },
-    "news": {
-        "1.9.9": {
-            "en": "Beta for V2.0.0 version, recordings, fast and slow lists supported",
-            "de": "Betaversion für V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und es gibt 3 verschiedene Ausleseintervalle!"
+        ],
+        "news": {
+            "1.9.9": {
+                "en": "Beta for V2.0.0 version, recordings, fast and slow lists supported",
+                "de": "Betaversion für V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und es gibt 3 verschiedene Ausleseintervalle!"
+            },
+            "1.2.4": {
+                "en": "Beta for next version, recordings supported",
+                "de": "Betaversion für nächstes Update. Es werden jetzt auch die 'recordings' ausgelesen!"
+            },
+            "1.2.3": {
+                "en": "Implemented a correction to show also switchPrograms",
+                "de": "Habe Änderungen vorgenommen um auch switchPrograms anzuzeigen"
+            },
+            "1.2.2": {
+                "en": "Allowed adapter to use no valid password if 64 character accesskey is provided",
+                "de": "Wen nur 64-Zeichen access-key verfügbar ist braucht kein gültiges passwort vorhanden sein, es sollte aber trotzdem nicht leer sein!"
+            },
+            "1.2.1": {
+                "en": "bug bei set values cortrected",
+                "de": "Fehler bein Setzten der Werte wurde behoben."
+            },
+            "1.2.0": {
+                "en": "Supports compact mode, Admin3 and gets access key by it self",
+                "de": "Compact mode sowie Admin3-Unterstützzung und accesskey kann jetzt intern berechnet werden."
+            },
+            "1.1.7": {
+                "en": "Supports Admin3 and getting access key by it self",
+                "de": "Admin3 Unsterstützung"
+            },
+            "1.1.5": {
+                "en": "Adapter communication and retries more often to catch more errors, also for writes.",
+                "de": "Adapter versucht es öfter die Daten vom KM200 zu lesen um interne Server Error 500 zu umgehen"
+            },
+            "1.1.1": {
+                "en": "Adapter handles better communication and retries if he got an error.",
+                "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
+            }
         },
-        "1.2.4": {
-            "en": "Beta for next version, recordings supported",
-            "de": "Betaversion für nächstes Update. Es werden jetzt auch die 'recordings' ausgelesen!"
         },
-        "1.2.3": {
-            "en": "Implemented a correction to show also switchPrograms",
-            "de": "Habe Änderungen vorgenommen um auch switchPrograms anzuzeigen"
-        },
-        "1.2.2": {
-            "en": "Allowed adapter to use no valid password if 64 character accesskey is provided",
-            "de": "Wen nur 64-Zeichen access-key verfügbar ist braucht kein gültiges passwort vorhanden sein, es sollte aber trotzdem nicht leer sein!"
-        },
-        "1.2.1": {
-            "en": "bug bei set values cortrected",
-            "de": "Fehler bein Setzten der Werte wurde behoben."
-        },
-        "1.2.0": {
-            "en": "Supports compact mode, Admin3 and gets access key by it self",
-            "de": "Compact mode sowie Admin3-Unterstützzung und accesskey kann jetzt intern berechnet werden."
-        },
-        "1.1.7": {
-            "en": "Supports Admin3 and getting access key by it self",
-            "de": "Admin3 Unsterstützung"
-        },
-        "1.1.5": {
-            "en": "Adapter communication and retries more often to catch more errors, also for writes.",
-            "de": "Adapter versucht es öfter die Daten vom KM200 zu lesen um interne Server Error 500 zu umgehen"
-        },
-        "1.1.1": {
-            "en": "Adapter handles better communication and retries if he got an error.",
-            "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
-        }
-    },
     "native": {
         "adresse": "BuderusKM200.fritz.box",
         "blacklist": "/gateway*, *.switchPrograms.*, *.holidayModes.*",
