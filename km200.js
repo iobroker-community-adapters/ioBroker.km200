@@ -37,7 +37,7 @@ function makeRegexp(li) {
     if (!li.endsWith('$'))
         li += '$';
 
-    return new RegExp(li.replace(/\./g, '\\.', ).replace(/\*/g, '.*').replace(/\\\.\.\*/g, '.*'));
+    return new RegExp(li.replace(/\./g, '\\.').replace(/\*/g, '.*').replace(/\\\.\.\*/g, '.*'));
 }
 
 class KM200 {
