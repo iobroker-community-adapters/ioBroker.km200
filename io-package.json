@@ -26,20 +26,11 @@
         "extIcon": "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
         "keywords": [
             "Buderus",
-            "KM200","KM50","KM100","KM300","Junkers","Bosch",
+            "KM200", "KM50", "KM100", "KM300", "Junkers", "Bosch",
             "vis",
             "GUI",
             "graphical",
             "scada"
-        ],
-        "readme": "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
-        "type": "climate-control",
-        "license": "MIT",
-        "authors": [
-            {
-                "name": "Frank Joke",
-                "email": "frankjoke@hotmail.com"
-            }
         ],
         "news": {
             "1.9.9": {
@@ -79,7 +70,14 @@
                 "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
             }
         },
-        },
+        "readme": "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
+        "type": "climate-control",
+        "license": "MIT",
+        "authors": [{
+            "name": "Frank Joke",
+            "email": "frankjoke@hotmail.com"
+        }]
+    },
     "native": {
         "adresse": "BuderusKM200.fritz.box",
         "blacklist": "/gateway*, *.switchPrograms.*, *.holidayModes.*",
