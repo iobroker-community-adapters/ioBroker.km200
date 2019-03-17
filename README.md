@@ -1,6 +1,6 @@
 # ioBroker.km200
 
-## ioBroker adapter Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi
+## for Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi
 
 ![Logo](admin/km200.png)
 
