@@ -6,6 +6,10 @@
     "accesskey": "Geração de Accesskey no site https://ssl-account.com/km200.andreashahn.info/",
     "address": "Link para o KM200",
     "blacklist": "lista de nomes (pode ser partes com \"*\") para desabilitar estados geradores do KM200 como: \"/ Gateway *\", \"/ recordings / *",
-    "interval": "Intrevall para pesquisa (padrão 15 minutos, mínimo 5 minutos)",
-    "port": "Porta (80 padrão)"
+    "fastinterval": "",
+    "fastlist": "",
+    "interval": "",
+    "port": "Porta (80 padrão)",
+    "slowinterval": "",
+    "slowlist": ""
 }

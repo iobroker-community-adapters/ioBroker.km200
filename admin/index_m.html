@@ -261,28 +261,28 @@
     </div>
 
     <div class="row">
-      <div class="col s12 m8 l5">
+      <div class="col s12 m8 l8">
         <input class="value" id="adresse" type="text" />
         <label class="translate" for="adresse">address</label>
       </div>
-      <div class="col s12 m4 l3">
-        <input class="value number" id="interval" min="5" max="60" type="number" />
+      <div class="col s8 m4 l4">
+        <input class="value number" id="interval" min="10" max="60" type="number" />
         <label class="translate" for="interval">interval</label>
       </div>
     </div>
 
     <div class="row">
       <div class="col s12">
-        <br<br><br>
+        <br><br>
       </div>
     </div>
 
     <div class="row">
-      <div class="input-field col s12 m6 l4">
+      <div class="input-field col s12 m8 l8">
         <input id="accesskey" type="text" data-crypt="0" size="40" class="value" />
         <label class="translate" for="accesskey">Gateway Password</label>
       </div>
-      <div class="input-field col s12 m6 l4">
+      <div class="input-field col s8 m4 l4">
         <input id="privatepassword" type="password" data-crypt="0" size="30" class="value" />
         <label class="translate" for="privatepassword">Private Password</label>
       </div>
@@ -302,6 +302,29 @@
         <span class="helper-text translate">Blacklist</span>
       </div>
     </div>
+
+    <div class="row">
+      <div class="input-field col s8 m8 l8">
+        <input id="fastlist" type="text" data-crypt="0" size="80" class="value" />
+        <label class="translate" for="fastlist">fastlist</label>
+      </div>
+      <div class="input-field col s8 m4 l4">
+        <input id="fastinterval" type="number" min="0" max="30" data-crypt="0" size="10" class="value number" />
+        <label class="translate" for="fastinterval">fastinterval</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-field col s12 m8 l8">
+        <input id="slowlist" type="text" data-crypt="0" size="80" class="value" />
+        <label class="translate" for="slowlist">slowlist</label>
+      </div>
+      <div class="input-field col s8 m4 l4">
+        <input id="slowinterval" type="number" min="0" max="24" data-crypt="0" size="30" class="value number" />
+        <label class="translate" for="slowinterval">slowinterval</label>
+      </div>
+    </div>
+
 
     <div class="row">
       <div class="col s12">

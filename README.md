@@ -33,15 +33,28 @@ If you add an '!' at the end of the address the adapter will work in debug mode 
 Since the adapter must query the data from the system I have defined an update interval,
 This is set to a minimum of 5 minutes since every update requires a separate query.
 
-My system (2 heating circuits and a hot water circuit) provides more than 150 data points where I can not use most and some are double.
+My system (2 heating circuits and a hot water circuit) provides more than 180 data points where I can not use most and some are double.
 
 That's why I introduced a black / push list to hide or show certain data.
-This list consists of strings which are formed into RegExp and the services in the heater are then filtered afterwards.
+This list consists of strings similar to RegExp (which they are conbverted to by the adapter) and the services in the heater are then filtered with them afterwards.
 
-The syntax is that "/ something *" or "- / something *" everything fades out with "/ something" begins and then any characters (or nothing) has.
-With "+. * Temp *" you can fade in everything that contains 'temp' and that takes precedence over the faded out!
+The syntax is that `+` at the very beginning means that this field should not be skiupped, even if another rule would block it.
+A `-` is like nothing and caiuses the mathced state to be blocked.
+each match is separated by `,` and can include `/` or `^` for the beginning, `*`which match everything and `$` at the end to match the end.
+The strings are case sensitive!!! If you like to know which states are found switch on debug mode and remove all blockings, then you will find all stated created and can block some unneeded date with block list.
+Examples: With `+*temp*` you can fade in everything that contains 'temp' and with `_Hourly$` you can block everything which has '_Hourly' at the end, both combined will block all _Hourly at end which do not have temp in their name.
 
-Mile list looks like `` / gateway * ',' / recordings * ','. * SwitchPrograms. * ',' / HeatSource * ','. * HolidayModes. * "]` And hides about 90 of ~ 150 records my plant off.
+Mye list looks like `/gateway*, /recordings*,*SwitchPrograms*,/HeatSource*, *HolidayModes*` And hides about 90 of ~ 180 records my plant off.
+
+There are two other schedules available now, the fast (for states polled faster than every 30 minutes) and slow for states which are polled on hours or multihours cycles.
+This allows you to track some  information like temperatures in 1-5 minute cycles and other items in normal 20 minute cycles. The ones which usually do not change wven within an hour (like _Daily$ or _Monthly$ and severyl other general data) do not need to be read even every 30 minutes because they will not change.
+THis strategy helps to get faster readings for important data and slower readings for not so important.
+
+The data for recording is (small) history data within the heating system. There are 3 different available: _Hourly, _Daily and Monthly.
+Hourly covers noprmally the last 48 hours. _Daily the last 2 month and Monthly not more than a year, all from current time of readout. Some data points do show less data points.
+You have to understand that the adapter collects the data from 3 individual calls for each recorded datapoint!  
+
+`switchPrograms` can be reat and written now as well, it's a JSON-String which reflects an Array of weekdays, Please don't change format, just the numbers when uploading. It seems the numbers are minutes can be set only to 15 minutes increments!
 
 Since V 1.1.2 the brackets and commas can be omitted and the blocked / pushed values ​​can only be written with comma!
 
@@ -52,9 +65,22 @@ The system works with services that are structured like a directory tree and thi
 If you have entered the 64-character access-key you don't need the password, but it should not be left blank, just write in anything!
 
 ## Important
-* Adapter requires node >= v6.* 
+* Adapter requires node >= v6.1.* 
+
+## Todo
+
+* Additional language support and text translation
 
 ## changelog
+
+### 1.9.9
+
+* Beta for v2.0.0
+* Implemented recordings for hourly, daily and monthly data
+* Changed readout for 'mins' units to enable these fields for read/write
+* Implemented 2 additional time schedule where you can define fast cycle (1-30 minutes), normal with 30-60 minutes and slow with 1-24 hours. You define the lists whjich go to fast or slow in a similar way than the blocklist.
+* Blocklist syntax changed sligly. `/` or `^` first is for from beginning, `*` can now be everywhere and `$` can be the end
+* `switchPrograms` are supported now for read and write!  
 
 ### 1.2.4
 

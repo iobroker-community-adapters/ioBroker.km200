@@ -17,6 +17,29 @@ const km200_crypt_md5_salt = new Uint8Array([
     0xff, 0xd8, 0x42, 0xe9, 0x89, 0x5a, 0xd1, 0xe4
 ]);
 
+function isInList(id, list) {
+    for (let i of list)
+        if (i.test(id))
+            return id;
+    return false;
+}
+
+function makeRegexp(li) {
+    if (!li.startsWith('^/')) {
+        if (!li.startsWith('/')) {
+            if (!li.startsWith('^'))
+                li = li.startsWith('*') ? '.' + li : '.*' + li;
+            else
+                li = '^/' + li.slice(1);
+        } else
+            li = '^' + li;
+    }
+    if (!li.endsWith('$'))
+        li += '$';
+
+    return new RegExp(li.replace(/\./g, '\\.', ).replace(/\*/g, '.*').replace(/\\\.\.\*/g, '.*'));
+}
+
 class KM200 {
     constructor() {
         this.aesKey = null; // buffer will be generated on init from accessKey
@@ -99,7 +122,7 @@ class KM200 {
         this.blocked = [];
         this.options = {
             hostname: accessUrl,
-            timeout: 2000,
+            timeout: 5000,
             status: [200],
             encoding: 'utf8',
             port: 80,
@@ -132,21 +155,8 @@ class KM200 {
                 ispush = true;
             } else if (li.startsWith('-'))
                 li = li.slice(1);
-            if (!li.startsWith('^/')) {
-                if (!li.startsWith('/')) {
-                    if (!li.startsWith('^'))
-                        li = '^/' + li;
-                    else
-                        li = '^/' + li.slice(1);
-                } else
-                    li = '^' + li;
-            }
-            if (!li.endsWith('$'))
-                li += '$';
-            const j = li.indexOf('*');
-            if (j > 1 && li[j - 1] !== '.')
-                li = li.slice(0, j) + '.' + li.slice(j);
-            (ispush ? this.pushed : this.blocked).push(A.D(`add to ${ispush ? 'pushed' : 'blocked'} ${li}`, new RegExp(li)));
+            li = makeRegexp(li);
+            (ispush ? this.pushed : this.blocked).push(A.D(`add to ${ispush ? 'pushed' : 'blocked'} ${li}`, li));
         }
     }
 
@@ -254,7 +264,8 @@ class KM200 {
         opt.method = 'GET';
         //        opt.url = opt.hostname + service;
         opt.status = [200, 403];
-        return A.retry(4, () => A.wait(10).then(() => A.request(opt))
+
+        return A.retry(4, () => A.request(opt)
                 .then((data) => {
                     if (!data)
                         return Promise.reject(`No Data for ${service}!`);
@@ -275,16 +286,17 @@ class KM200 {
                         delete o.recording;
                         o.id = oservice;
                         //                    A.Df('get recordings for service %s was %O', service, o);
-                        return o;
+                        return A.resolve(o);
                     }
                     if (o && o.references)
                         o = o.references;
                     //                    A.If('Service:%s was %O',service,o);
-                    return Promise.resolve(o);
-                }))
-            .catch(e => A.Wf('Error in get service data: %O', e));
+                    return A.resolve(o);
+                }), opt.pathname, 30)
+            .catch(() => A.Wf('Skip service data of %s', opt.pathname));
         //        A.D(A.O(opt));
     }
+
     set(service, value) {
         let post = JSON.stringify({
             value: value
@@ -302,13 +314,9 @@ class KM200 {
     }
 
     isBlocked(id) {
-        for (let i = 0; i < this.pushed.length; ++i)
-            if (this.pushed[i].test(id))
-                return false;
-        for (let i = 0; i < this.blocked.length; ++i)
-            if (this.blocked[i].test(id))
-                return true;
-        return false;
+        if (isInList(id, this.pushed))
+            return false;
+        return isInList(id, this.blocked);
     }
 
     getServices(service) {
@@ -333,12 +341,12 @@ class KM200 {
                     if (Array.isArray(data)) {
                         return A.seriesOf(data, (di) => {
                             //                            A.D(`array had ${A.O(di)}`)
-                            if (di && di.id && di.uri && !this.isBlocked(di.id))
-                                return this.getServices([di.id]);
+                            if (di && di.id && di.uri && !self.isBlocked(di.id))
+                                return self.getServices([di.id]);
                             return A.resolve();
                         }, 10);
                     } else if (!self.isBlocked(item)) {
-                        A.resolve().then(() => data.setpointProperty ? self.getServices(A.D(`setPointProperty = ${data.setpointProperty.id}`, [data.setpointProperty.id])) : null)
+                        return A.resolve().then(() => data.setpointProperty ? self.getServices(A.D(`setPointProperty = ${data.setpointProperty.id}`, [data.setpointProperty.id])) : null)
                             //                            .then(() => data.recordedResource ? self.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id])) : null)
                             .then(() => {
                                 const d = item.split('/').slice(1).join('.');
@@ -349,7 +357,6 @@ class KM200 {
                                 return Promise.resolve(A.D(`Service[${d}]=${A.O(data)}`, null));
                             }).catch(e => A.Wf('Error in getservice: %O', e));
                     }
-
                     return null;
                 }).catch((err) => A.D(`could not get data for '${item} with err=${err}`));
         }, 20).then(() => {
@@ -465,7 +472,7 @@ function createStates() {
                 v = A.O(o.switchPoints);
                 o.valIs = "switchPoints";
                 t = 'string';
-                w = false;
+//                w = false;
                 break;
             case 'yRecording':
                 v = o.values;
@@ -480,12 +487,12 @@ function createStates() {
                 w = false;
                 //                return Promise.resolve(null);
         }
-/*
-        if (u === 'mins') {
-            t = 'string';
-            v = minutes(parseInt(v));
-        }
-*/        
+        /*
+                if (u === 'mins') {
+                    t = 'string';
+                    v = minutes(parseInt(v));
+                }
+        */
         const c = {
             type: 'state',
             id: n,
@@ -517,7 +524,7 @@ function createStates() {
         return A.makeState(c.common, v, true);
     }, 10).then(() => {
         const st = Object.keys(states);
-        A.I(`KM200 finished creation of ${st.length} states: ${A.O(st)}`);
+        A.I(`KM200 found ${st.length} states, get their values now.`);
         // subscribe to states only now, but after we managed to write the TODO:
         return Promise.resolve(A.adapter.subscribeStates('*'));
     });
@@ -536,7 +543,9 @@ function updateStates(items) {
             A.I(`Update ${A.O(ni)}`);
         items = ni;
     } else if (!items) items = states;
-    A.seriesIn(items, (n) => {
+    if (Array.isArray(items))
+        items = items.map(i => states[i]);
+    return A.seriesIn(items, (n) => {
         const o = items[n];
         const km = o.native.km200;
         return km200.get(km.id)
@@ -546,11 +555,12 @@ function updateStates(items) {
                     val = data.allowedValues.indexOf(data.value);
                 else
                     val = data[km.valIs];
-//                if (km.unitOfMeasure === 'mins')
-//                    val = minutes(parseInt(val));
-                return A.makeState(n, val, true);
+                //                if (km.unitOfMeasure === 'mins')
+                //                    val = minutes(parseInt(val));
+                return A.makeState(o.id, val, true);
             }).catch((err) => A.I(`Update State ${n} err: ${A.O(err)}`));
-    }, 5);
+    }, 5)
+    .catch(e => A.Wf('Error in updateStates: %O',e));
 }
 
 
@@ -578,6 +588,8 @@ function main() {
 
     km200.init(A.C.adresse, A.C.accesskey.trim(), A.C.privatepassword.trim());
 
+    let seq = new A.Sequence();
+
     //    var blacklist = A.J(A.C.blacklist);
     let blacklist = A.trim(A.split(A.C.blacklist.replace(/"|\[|\]/g, ' '), ','));
     if (blacklist && Array.isArray(blacklist))
@@ -586,7 +598,21 @@ function main() {
         A.W(`KM200: invalid black/whitelist will be ignored:'${A.C.blacklist}'
                     need to be an Array with []`);
 
-    A.I(`Interval=${A.C.interval} min, Black/Push-list: ${blacklist}`);
+    let fastlist = A.trim(A.split(A.C.fastlist.replace(/"|\[|\]/g, ' '), ',')).map(i => makeRegexp(i));
+    if (!fastlist) fastlist = [];
+
+    let slowlist = A.trim(A.split(A.C.slowlist.replace(/"|\[|\]/g, ' '), ',')).map(i => makeRegexp(i));
+    if (!slowlist) slowlist = [];
+
+    let slowint = A.C.slowinterval || 0;
+    let fastint = A.C.fastinterval || 0;
+    let slowa = [];
+    let fasta = [];
+    let norma = [];
+
+//    A.I(`Interval=${A.C.interval} min, Black/Push-list: ${blacklist}`);
+//    A.I(`Fast Interval=${fastint} min, Fast-List: ${fastlist}`);
+//    A.I(`Slow Interval=${slowint} hours, Slow-List: ${slowlist}`);
     A.clearStates();
     km200.getServices()
         .then((obj) => {
@@ -599,9 +625,32 @@ function main() {
             A.I(`Services found: ${Object.keys(obj).length}`);
             return createStates();
         })
-        .catch(e => A.Wf('INit error %O', e))
+        .catch(e => A.Wf('INit getservices error %O', e))
+        .then(() => {
+            for (let s of A.ownKeys(states)) {
+                if (isInList(s, fastlist))
+                    fasta.push(s);
+                else if (isInList(s, slowlist))
+                    slowa.push(s);
+                else
+                    norma.push(s);
+            }
+            A.I(`Interval=${A.C.interval} min, Norm-list: ${norma}\n`);
+            A.I(`Fast Interval=${fastint} min, Fast-List: ${fasta}\n`);
+            A.I(`Slow Interval=${slowint} hours, Slow-List: ${slowa}\n`);
+        })
         .then(() => updateStates())
-        .then(() => A.timer = setInterval(updateStates, Number(A.C.interval) * 1000 * 60))
-        .then(() => A.cleanup());
+        .then(() => {
+            A.timer = [];
+            if (norma.length)
+                A.timer.push(setInterval(seq.addp.bind(seq), Number(A.C.interval) * 1000 * 60, () => updateStates(norma)));
+            if (fasta.length && fastint)
+                A.timer.push(setInterval(seq.addp.bind(seq), Number(fastint) * 1000 * 60, () => updateStates(fasta)));
+            if (slowa.length)
+                A.timer.push(setInterval(seq.addp.bind(seq), Number(slowint) * 1000 * 60 * 60, () => updateStates(slowa)));
+        })
+        .then(() => A.cleanup())
+        .then(A.nop,A.nop)
+        .then(() => A.If('Adapter km200 initialization finished with %d states.',A.ownKeys(states).length));
 
 }

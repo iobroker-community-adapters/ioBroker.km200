@@ -40,10 +40,17 @@ Meine Anlage (2 Heizkreise und ein Heisswasserkreis) liefert mehr als 150 Datenp
 Deshalb hab ich eine Blak/Push-List eingeführt um bestimmte Daten ausblenden oder einblenden zu können.
 Diese Liste besteht aus strings welche zu RegExp geformt werden und die Services in der Heizung werden dann danach gefiltert.
 
-Die Syntax ist dass "/irgendwas*" oder "-/irgendwas*" alles ausblendet fas mit "/irgendwas" beginnt und dann beliebige Zeichen (oder nichts) dran hat.
-Mit "+.*temp*" kann man alles einblenden was 'temp' enthält, und das hat Vorrang gegenüber dem Ausblened!
+Die Syntax erlaubt  `+` oder `-` vor jedes Element zu stellen. Ein '+' bedeutet dass STates die mit diesem Element matchen auf jeden fall abgefragt werden, ein '-' opder kein '+/-' bedeutet dass diese Elemente ausgefiltert werden sollen. Jedes Element selbst kann dann mit `/` oder `^` beginnen um den Anfang darzustellen, Ein '*' beschreibt beliebige ubd auch beliebig lange Elemente die auch irgendwo in der Mitte liegen können. Am Ende kann ein `$` stehen um das Ende zu bezeichnen.
+Beispiele: Mit `+*temp*` wird alles was 'temp' enthält gescannt, mit `_Hourly$` wird alles was mit '_Hourly' endet ausgefiltert. Stehen beide Elemente in der Liste würden alle mit _Hourly am Ende ausgefiltert werden welche kein temp enthalten..
 
-Meile Liste schaut so aus `["/gateway*","/recordings*",".*switchPrograms.*","/heatSource*",".*holidayModes.*"]` und blendet ca 90 der ~150 Datensätze meiner Anlage aus.
+Meine Liste schaut so aus ( ich brauche keine recordings siehe unten) `/gateway*, /recordings*,*SwitchPrograms*,/HeatSource*, *HolidayModes*` und sie filtert ca. die Hälfte der ~180 abfragbaren Punkte aus.
+
+In der neuen Version sind auch zwei neue Abfrageintervalle verfügbar. In den `fast` und `slow`-Listen können Elemente (ohne '+/-') gelistet werden welche scheller oder langsamer als die normale liste abgefragt werden. Die schnelle 'fast'-Liste kann im Minutenbereich Daten abrufen, die langsame 'slow'-Liste im Stundenbereich. Übrigens, alle Datenpunkte die nicht ausgefiltert werden und nich in den schnell/langsam-Listen stehen werden nurmal ausgelesen!
+z.B. ist es sinnlos _DAILY ider _Monthly in der normalen oder schenellen Liste abzufragen da sie sich nur 1x am Tag ändert.
+
+Die 'recording'-Daten sind kleine Arrays die Datenpunkte in der Vergangenheit zeigen. '_Hourly' sind Daten der letzten 48 Stunden, '_Daily' sind von denletzten 2 Monaten und _Monthly von den letzten 2 Jahren wobei es auch datenpunkte gibt die nicht all diese Zeiten oder Längen zur Verfügung stellen. 
+
+`switchPrograms` können nun auch gelesen werden, das Format ist ein JSON-String das ein Array von Wochentagen abbildet, bitte das Format NICHT ändern und nur die Zahklen ändern wenn ihr es schreibt da sonst ein Fehler auftritt! Es schaut aus dass die Werte Minuten sind und dass nur 15-Minuten-Intervalle erlaubt sind.
 
 Seit V 1.1.2 können die Klammern und hochkommas weggelassen werden und die blockierten/gepushten Werte nur mit Beistrich getrennt geschrieben werden!
 
@@ -51,12 +58,26 @@ Die Anlage arbeitet mit Services die wie ein Verzeichnisbaum strukturiert sind u
 
 ### Wichtig falls Adapter von Version 1.1.* upgedated wird
 
-Sie Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges privates Passwort, es darf nur nicht leer sein!
+Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges privates Passwort, es darf nur nicht leer sein!
 
 ## Important/Wichtig
-* Adapter requires node >= v6.*.*!
 
-## Changelog
+* Adapter requires node >= v6.1.*!
+
+## Todo
+
+* Bessere Sprachunterstüzung und texte in mehreren Sprachen fü einige Elemente
+
+## changelog
+
+### 1.9.9
+
+* Beta für v2.0.0
+* Unterstützung von 'recordings'-Datenpunkten
+* Änderung der Anzeige von 'mins' in normale Zahlenwerte um die Felder beschreibbar zu machen.
+* Zwei neue Zeitintervalle für schnelle (`fast`) und langsamere (`slow`) Abfragen.
+* Die Blocklist Syntax wurde leicht geändert. `/` oder `^` für den Beginn, `*` kann irgendwo stehen und  `$` am Ende
+* Unterstützung von switchPrograms beim Lesen und Schreiben!
 
 ### 1.2.4
 

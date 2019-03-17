@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "1.2.4",
+        "version": "1.9.9",
         "title": "Buderus KM200",
         "desc": {
             "en": "ioBroker Buderus KMx00",
@@ -42,6 +42,10 @@
         ]
     },
     "news": {
+        "1.9.9": {
+            "en": "Beta for V2.0.0 version, recordings, fast and slow lists supported",
+            "de": "Betaversion für V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und es gibt 3 verschiedene Ausleseintervalle!"
+        },
         "1.2.4": {
             "en": "Beta for next version, recordings supported",
             "de": "Betaversion für nächstes Update. Es werden jetzt auch die 'recordings' ausgelesen!"
@@ -77,10 +81,14 @@
     },
     "native": {
         "adresse": "BuderusKM200.fritz.box",
-        "blacklist": "/gateway*, /recordings*, .*switchPrograms.*, /heatSource*, .*holidayModes.*",
-        "interval": 15,
+        "blacklist": "/gateway*, *.switchPrograms.*, *.holidayModes.*",
+        "fastlist": "*.actualTemp$, *.pumpModulation$, roomtemperature$, actualPower$, actualModulation$, ^notifications$, *_t1$",
+        "slowlist": "*._Days$, *._Months",
+        "interval": 30,
+        "fastinterval": 2,
+        "slowinterval": 6,
         "accesskey": "wwww-xxxx-yyyy-zzzz",
-        "privatepassword": ""
+        "privatepassword": "please enter your password with mobile/web app"
     },
     "objects": [],
     "instanceObjects": []

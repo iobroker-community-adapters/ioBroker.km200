@@ -1,6 +1,6 @@
 {
   "name": "iobroker.km200",
-  "version": "1.2.4",
+  "version": "1.9.9",
   "description": "ioBroker Buderus KM200",
   "author": {
     "name": "Frank Joke",
@@ -34,7 +34,7 @@
     "url": "https://github.com/frankjoke/ioBroker.km200"
   },
   "dependencies": {
-    "@frankjoke/myadapter": "^1.0.1",
+    "@frankjoke/myadapter": "^1.0.2",
     "@iobroker/adapter-core": "^1.0.3",
     "js-rijndael": "^1.0.0"
   },
