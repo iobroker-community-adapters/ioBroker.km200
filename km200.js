@@ -592,11 +592,10 @@ function main() {
 
     //    var blacklist = A.J(A.C.blacklist);
     let blacklist = A.trim(A.split(A.C.blacklist.replace(/"|\[|\]/g, ' '), ','));
-    if (blacklist && Array.isArray(blacklist))
+    if (blacklist && Array.isArray(blacklist) && (blacklist.length>1 || blacklist[0]!==''))
         km200.addBlocked(blacklist);
     else
-        A.W(`KM200: invalid black/whitelist will be ignored:'${A.C.blacklist}'
-                    need to be an Array with []`);
+        A.I(`KM200: no blacklist used.`);
 
     let fastlist = A.trim(A.split(A.C.fastlist.replace(/"|\[|\]/g, ' '), ',')).map(i => makeRegexp(i));
     if (!fastlist) fastlist = [];
