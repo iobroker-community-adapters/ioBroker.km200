@@ -281,7 +281,8 @@ class KM200 {
                     }
                     if (o.type === 'yRecording' && o.recording && o.recording.length > 0) {
                         o.type = 'arrayData';
-                        o.values = o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / x.c) / 1000.0 : NaN);
+//                        A.If('item %s should get %s', o.id, o.recordedResource.id.endsWith('Power'));
+                        o.values = o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / (o.recordedResource.id.endsWith('Power') ? 60 : x.c)) / 1000.0 : NaN);
                         delete o.recordedResource;
                         delete o.recording;
                         o.id = oservice;
@@ -472,7 +473,7 @@ function createStates() {
                 v = A.O(o.switchPoints);
                 o.valIs = "switchPoints";
                 t = 'string';
-//                w = false;
+                //                w = false;
                 break;
             case 'yRecording':
                 v = o.values;
@@ -546,21 +547,21 @@ function updateStates(items) {
     if (Array.isArray(items))
         items = items.map(i => states[i]);
     return A.seriesIn(items, (n) => {
-        const o = items[n];
-        const km = o.native.km200;
-        return km200.get(km.id)
-            .then((data) => {
-                let val = null;
-                if (km.valIs === 'states')
-                    val = data.allowedValues.indexOf(data.value);
-                else
-                    val = data[km.valIs];
-                //                if (km.unitOfMeasure === 'mins')
-                //                    val = minutes(parseInt(val));
-                return A.makeState(o.id, val, true);
-            }).catch((err) => A.I(`Update State ${n} err: ${A.O(err)}`));
-    }, 5)
-    .catch(e => A.Wf('Error in updateStates: %O',e));
+            const o = items[n];
+            const km = o.native.km200;
+            return km200.get(km.id)
+                .then((data) => {
+                    let val = null;
+                    if (km.valIs === 'states')
+                        val = data.allowedValues.indexOf(data.value);
+                    else
+                        val = data[km.valIs];
+                    //                if (km.unitOfMeasure === 'mins')
+                    //                    val = minutes(parseInt(val));
+                    return A.makeState(o.id, val, true);
+                }).catch((err) => A.I(`Update State ${n} err: ${A.O(err)}`));
+        }, 5)
+        .catch(e => A.Wf('Error in updateStates: %O', e));
 }
 
 
@@ -592,7 +593,7 @@ function main() {
 
     //    var blacklist = A.J(A.C.blacklist);
     let blacklist = A.trim(A.split(A.C.blacklist.replace(/"|\[|\]/g, ' '), ','));
-    if (blacklist && Array.isArray(blacklist) && (blacklist.length>1 || blacklist[0]!==''))
+    if (blacklist && Array.isArray(blacklist) && (blacklist.length > 1 || blacklist[0] !== ''))
         km200.addBlocked(blacklist);
     else
         A.I(`KM200: no blacklist used.`);
@@ -609,9 +610,9 @@ function main() {
     let fasta = [];
     let norma = [];
 
-//    A.I(`Interval=${A.C.interval} min, Black/Push-list: ${blacklist}`);
-//    A.I(`Fast Interval=${fastint} min, Fast-List: ${fastlist}`);
-//    A.I(`Slow Interval=${slowint} hours, Slow-List: ${slowlist}`);
+    //    A.I(`Interval=${A.C.interval} min, Black/Push-list: ${blacklist}`);
+    //    A.I(`Fast Interval=${fastint} min, Fast-List: ${fastlist}`);
+    //    A.I(`Slow Interval=${slowint} hours, Slow-List: ${slowlist}`);
     A.clearStates();
     km200.getServices()
         .then((obj) => {
@@ -648,8 +649,8 @@ function main() {
             if (slowa.length)
                 A.timer.push(setInterval(seq.addp.bind(seq), Number(slowint) * 1000 * 60 * 60, () => updateStates(slowa)));
         })
-        .then(() => A.cleanup())
-        .then(A.nop,A.nop)
-        .then(() => A.If('Adapter km200 initialization finished with %d states.',A.ownKeys(states).length));
+        .then(() => A.cleanup('*'))
+        .then(A.nop, A.nop)
+        .then(() => A.If('Adapter km200 initialization finished with %d states.', A.ownKeys(states).length));
 
 }
