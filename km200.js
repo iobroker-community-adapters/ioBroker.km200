@@ -346,15 +346,14 @@ class KM200 {
                                 return self.getServices([di.id]);
                             return A.resolve();
                         }, 10);
-                    } else if (!self.isBlocked(item)) {
+                    } else if (data.recordedResource)
+                        return self.getServices(self.recNames.slice(0, 3).map(i => item + '/' + i));
+                    else if (!self.isBlocked(item)) {
                         return A.resolve().then(() => data.setpointProperty ? self.getServices(A.D(`setPointProperty = ${data.setpointProperty.id}`, [data.setpointProperty.id])) : null)
                             //                            .then(() => data.recordedResource ? self.getServices(A.D(`recordedResource = ${data.recordedResource.id}`, [data.recordedResource.id])) : null)
                             .then(() => {
                                 const d = item.split('/').slice(1).join('.');
-                                if (data.recordedResource) {
-                                    return self.getServices(self.recNames.slice(0, 3).map(i => item + '/' + i));
-                                } else
-                                    self.scannedServices[d] = data;
+                                self.scannedServices[d] = data;
                                 return Promise.resolve(A.D(`Service[${d}]=${A.O(data)}`, null));
                             }).catch(e => A.Wf('Error in getservice: %O', e));
                     }
