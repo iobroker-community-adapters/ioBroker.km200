@@ -281,7 +281,7 @@ class KM200 {
                     }
                     if (o.type === 'yRecording' && o.recording && o.recording.length > 0) {
                         o.type = 'arrayData';
-//                        A.If('item %s should get %s', o.id, o.recordedResource.id.endsWith('Power'));
+                        //                        A.If('item %s should get %s', o.id, o.recordedResource.id.endsWith('Power'));
                         o.values = o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / (o.recordedResource.id.endsWith('Power') ? 60 : x.c)) / 1000.0 : NaN);
                         delete o.recordedResource;
                         delete o.recording;
@@ -332,8 +332,8 @@ class KM200 {
             return A.reject(A.I(`Invalid (not Array) getService for ${A.O(service)}`));
         //        A.D(`try to get services for ${A.O(service)}`);
         return A.seriesOf(service, (item) => {
-            if (self.isBlocked(item))
-                return Promise.resolve(null);
+            //            if (self.isBlocked(item))
+            //                return Promise.resolve(null);
             return self.get(item)
                 .then((data) => {
                     //                    A.D(`get returned ${A.O(data)}`)
@@ -342,7 +342,7 @@ class KM200 {
                     if (Array.isArray(data)) {
                         return A.seriesOf(data, (di) => {
                             //                            A.D(`array had ${A.O(di)}`)
-                            if (di && di.id && di.uri && !self.isBlocked(di.id))
+                            if (di && di.id && di.uri /* && !self.isBlocked(di.id) */ )
                                 return self.getServices([di.id]);
                             return A.resolve();
                         }, 10);
