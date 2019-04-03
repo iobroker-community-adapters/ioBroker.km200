@@ -648,7 +648,7 @@ function main() {
             if (slowa.length)
                 A.timer.push(setInterval(seq.addp.bind(seq), Number(slowint) * 1000 * 60 * 60, () => updateStates(slowa)));
         })
-        .then(() => A.cleanup('*'))
+        .then(() => A.C.deletestates ? A.cleanup('*') : null)
         .then(A.nop, A.nop)
         .then(() => A.If('Adapter km200 initialization finished with %d states.', A.ownKeys(states).length));
 

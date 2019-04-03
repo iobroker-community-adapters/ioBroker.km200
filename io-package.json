@@ -90,6 +90,7 @@
         "interval": 30,
         "fastinterval": 2,
         "slowinterval": 6,
+        "deletestates": true,
         "accesskey": "wwww-xxxx-yyyy-zzzz",
         "privatepassword": "please enter your password with mobile/web app"
     },

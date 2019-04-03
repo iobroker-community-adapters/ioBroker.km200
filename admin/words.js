@@ -15,4 +15,5 @@ systemDictionary = {
     "port": {                                        "en": "Port (80 default)",                               "de": "Port (80 default)",                               "ru": "Порт (80 по умолчанию)",                          "pt": "Porta (80 padrão)",                               "nl": "Poort (standaard 80)",                            "fr": "Port (80 par défaut)",                            "it": "Porta (80 predefinito)",                          "es": "Puerto (80 predeterminado)",                      "pl": "Port (domyślnie 80)",                             "zh-cn": "端口（默认为80）"},
     "slowinterval": {                                "en": "Slow refresh schedule in hours (0=off, max=24)"},
     "slowlist": {                                    "en": "List of points for slow refresh schedule"},
+    "deletestates": {                                 "en": "Delete unused states?", "de": "Lösche unbenutze States?"},
 };

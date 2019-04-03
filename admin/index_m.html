@@ -1,233 +1,62 @@
 <html>
 
 <head>
-  <!-- these 4 files always have to be included -->
-  <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
-  <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
-  <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
-  <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-  <!-- these files always have to be included -->
-  <script type="text/javascript" src="../../js/translate.js"></script>
-  <script type="text/javascript" src="../../lib/js/materialize.js"></script>
-  <script type="text/javascript" src="../../js/adapter-settings.js"></script>
-  <script type="text/javascript" src="words.js"></script>
+    <!-- Load ioBroker scripts and styles-->
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
+    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-  <script type="text/javascript">
-    var devices = [];
-    var active = false;
-    var g_onChange;
-    var SEP = '_';
-    var secret;
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
-    if (typeof _ !== 'function') _ = translateWord;
+    <!-- Load our own files -->
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="words.js"></script>
 
-    function encrypt(key, value) {
-      var result = '';
-      for (var i = 0; i < value.length; ++i) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-      }
-      return result;
-    }
-
-    function decrypt(key, value) {
-
-      var result = '';
-      for (var i = 0; i < value.length; ++i) {
-        result += String.fromCharCode(key[i % key.length].charCodeAt(0) ^ value.charCodeAt(i));
-      }
-      return result;
-
-    }
-
-
-    function loadHelper(settings, onChange) {
-
-      if (!settings) return;
-      if (settings.password === undefined) settings.password = '';
-      if (settings.user === undefined) settings.user = '';
-
-      g_onChange = onChange;
-
-      getIPs(function (ips) {
-        for (var i = 0; i < ips.length; i++) {
-          $('#bind').append('<option value="' + ips[i].address + '">' + ips[i].name + '</option>');
-        }
-        $('#bind.value').val(settings.bind).select();
-      });
-
-
-      $('#values').on('click', function () {
-        //checkDevices();
-      });
-
-      function checkDevices() {
-        console.log("Ceck devices");
-        var oldDev = table2values('values');
-        var newDev = [];
-        var tmpIp = [];
-        for (var i = 0; i < oldDev.length; i++) {
-          console.log(JSON.stringify(tmpIp));
-          if (!tmpIp.includes(oldDev[i].ip)) {
-            tmpIp.push(oldDev[i].ip);
-            newDev.push(oldDev[i]);
-            if (i === oldDev.length - 1) {
-              console.log("safe");
-              values2table('values', newDev, true);
-            }
-          }
-        }
-      };
-      //checkDevices();
-
-      socket.emit('getState', 'system.adapter.' + adapter + '.' + instance + '.alive', function (err, state) {
-        active = /*common.enabled ||*/ (state && state.val);
-      });
-
-      changed = true;
-      g_onChange = onChange;
-
-      function getVal(id) {
-        var ar = id.split(SEP);
-        var obj = settings;
-        for (var i = 0; i < ar.length - 1; i++) {
-          if (obj[ar[i]] === undefined) obj[ar[i]] = {};
-          obj = obj[ar[i]];
-        }
-        return obj[ar[ar.length - 1]];
-      }
-
-      function forAllKeys(obj, s, cb) {
-        var sep = SEP; //'.';
-        if (typeof s === 'function') {
-          cb = s;
-          s = '';
-        }
-        for (var i in obj) {
-          if (typeof obj[i] === 'object') {
-            if (Array.isArray(obj[i])) continue;
-            forAllKeys(obj[i], s ? s + sep + i : i, cb)
-          } else {
-            cb && cb(s ? s + sep + i : i);
-          }
-        }
-      }
-
-
-      //for (var key in settings) {
-      forAllKeys(settings, function (key) {
-        // example: select elements with id=key and class=value and insert value
-        var val = getVal(key);
-
-        if (val && $('#' + key + '.value').attr('data-crypt') == "1") {
-          val = decrypt(secret, val);
-        }
-        //var val = $key.data('crypt') && settings[key] ? decrypt(secret, settings[key]) : settings[key];
-        // var val = $key.data('crypt') && getVal(key) ? decrypt(secret, getVal(key)) : getVal(key);
-        if ($('#' + key + '.value').attr('type') == 'checkbox') {
-          $('#' + key + '.value').prop('checked', val).change(function () {
-            if ($('#auth').prop('checked')) {
-              $('#secure').prop('checked', true);
-            }
-            onChange();
-            //showHideSettings();
+    <script type="text/javascript">
+      // This will be called by the admin adapter when the settings page loads
+      function load(settings, onChange) {
+          // example: select elements with id=key and class=value and insert value
+          if (!settings) return;
+          $('.value').each(function () {
+              var $key = $(this);
+              var id = $key.attr('id');
+              if ($key.attr('type') === 'checkbox') {
+                  // do not call onChange direct, because onChange could expect some arguments
+                  $key.prop('checked', settings[id])
+                      .on('change', () => onChange())
+                      ;
+              } else {
+                  // do not call onChange direct, because onChange could expect some arguments
+                  $key.val(settings[id])
+                      .on('change', () => onChange())
+                      .on('keyup', () => onChange())
+                      ;
+              }
           });
-        } else {
-          $('#' + key + '.value').val(val).change(function () {
-            onChange();
-          }).keyup(function () {
-            onChange();
+          onChange(false);
+          // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+          if (M) M.updateTextFields();
+      }
+
+      // This will be called by the admin adapter when the user presses the save button
+      function save(callback) {
+          // example: select elements with class=value and build settings object
+          var obj = {};
+          $('.value').each(function () {
+              var $this = $(this);
+              if ($this.attr('type') === 'checkbox') {
+                  obj[$this.attr('id')] = $this.prop('checked');
+              } else {
+                  obj[$this.attr('id')] = $this.val();
+              }
           });
-        }
-      });
-      // Set default language
-      if (!settings.language) {
-        settings.language = systemLang || 'en';
-        $('#language').val(settings.language).trigger('change');
+          callback(obj);
       }
-      devices = settings.keys; // || [ {name: '', ip: "", mac: ""} ];
-      values2table('values', devices, onChange);
-      //changed = true;
-      // $('#password_confirm').val($('#password').val());
-      M.updateTextFields();
-      onChange(false);
-    }
-
-    function load(settings, onChange) {
-
-      socket.emit('getObject', 'system.config', function (err, obj) {
-        secret = (obj.native ? obj.native.secret : '') || 'Zgfr56gFe87jJOM';
-        loadHelper(settings, onChange);
-      });
-
-      onChange(false);
-    }
-
-    function setVal(obj, id, val) {
-      var ar = id.split(SEP);
-      for (var i = 0; i < ar.length - 1; i++) {
-        if (obj[ar[i]] === undefined) obj[ar[i]] = {};
-        obj = obj[ar[i]];
-      }
-      obj[ar[ar.length - 1]] = val;
-    }
-
-    function save(callback) {
-      var obj = {};
-      changed = true;
-      $('.value').each(function () {
-        var $this = $(this),
-          val;
-        switch ($this.attr('type')) {
-          case 'checkbox':
-            val = $this.prop('checked');
-            break;
-          case 'number':
-          case 'value':
-            val = ~~$this.val();
-            break;
-          default:
-            // val = $this.val();
-            // obj[$this.attr('id')] =  $this.data('crypt') && $this.val() ? encrypt(secret, $this.val()) : $this.val();
-            val = $this.data('crypt') && $this.val() ? encrypt(secret, $this.val()) : $this.val();
-        }
-        setVal(obj, $this.attr('id'), val);
-      });
-      obj.keys = table2values('values');
-
-      /*
-      if ($('#password').val() !== $('#password_confirm').val()) {
-        showMessage(_('Password confirmation is not equal with password'));
-        return;
-      }
-      */
-
-
-      callback(obj);
-    }
   </script>
-  <style>
-    .loader {
-      border: 4px solid #b8d1f3;
-      /* Light grey */
-      border-top: 4px solid #3498db;
-      /* Blue */
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      animation: spin 2s linear infinite;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
 </head>
 
 
@@ -261,13 +90,17 @@
     </div>
 
     <div class="row">
-      <div class="col s12 m8 l8">
-        <input class="value" id="adresse" type="text" />
+      <div class="col s12 m5 l5">
         <label class="translate" for="adresse">address</label>
+        <input class="value" id="adresse" type="text" />
       </div>
-      <div class="col s8 m4 l4">
-        <input class="value number" id="interval" min="10" max="60" type="number" />
+      <div class="col s7 m4 l4">
         <label class="translate" for="interval">interval</label>
+        <input class="value number" id="interval" min="10" max="60" type="number" />
+      </div>
+      <div class="col s5 m3 l3">
+        <input class="value" id="deletestates" type="checkbox" />
+        <label class="translate" for="deletestates">deletestates</label>
       </div>
     </div>
 
@@ -279,12 +112,12 @@
 
     <div class="row">
       <div class="input-field col s12 m8 l8">
-        <input id="accesskey" type="text" data-crypt="0" size="40" class="value" />
         <label class="translate" for="accesskey">Gateway Password</label>
+        <input id="accesskey" type="text" data-crypt="0" size="40" class="value" />
       </div>
       <div class="input-field col s8 m4 l4">
-        <input id="privatepassword" type="password" data-crypt="0" size="30" class="value" />
         <label class="translate" for="privatepassword">Private Password</label>
+        <input id="privatepassword" type="password" data-crypt="0" size="30" class="value" />
       </div>
     </div>
 
