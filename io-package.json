@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "2.0.0",
+        "version": "2.0.1",
         "title": "Buderus KM200",
         "titleLang": "Heating system adapter for Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi",
         "desc": {
@@ -33,6 +33,10 @@
             "scada"
         ],
         "news": {
+            "2.0.1": {
+                "en": "change blacklist usage and add delete states option",
+                "de": "Änderung bei der Nutzung der Blacklist und eine Option um nicht immer unbenutze States zu löschen dazugefügt"
+            },
             "2.0.0": {
                 "en": "V2.0.0 version, recordings of power data show now right values",
                 "de": "V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und die Power-werte sind jetzt richtig wie in der web-app"

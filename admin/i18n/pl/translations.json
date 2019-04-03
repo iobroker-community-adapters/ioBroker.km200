@@ -6,6 +6,7 @@
     "accesskey": "Generowanie klucza dostępu w witrynie internetowej https://ssl-account.com/km200.andreashahn.info/",
     "address": "Link do KM200",
     "blacklist": "lista nazw (może być częściami z \"*\"), aby wyłączyć generowanie stanów z KM200 jak: \"/ Gateway *\", \"/ nagrania / *",
+    "deletestates": "",
     "fastinterval": "",
     "fastlist": "",
     "interval": "",

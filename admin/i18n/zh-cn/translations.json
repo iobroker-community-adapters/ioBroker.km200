@@ -6,6 +6,7 @@
     "accesskey": "Webseite上的Accesskey生成https://ssl-account.com/km200.andreashahn.info/",
     "address": "链接到KM200",
     "blacklist": "名称列表（可以是带有“*”的部分）来禁用从KM200生成状态，如：“/ Gateway *”，“/ recordings / *",
+    "deletestates": "",
     "fastinterval": "",
     "fastlist": "",
     "interval": "",

@@ -6,6 +6,7 @@
     "accesskey": "Key, auf Webseite https://ssl-account.com/km200.andreashahn.info/ generiert!",
     "address": "KM200 Link",
     "blacklist": "Liste der Namen (Können auch Teile sein mit \"*\") welche keine States vom KM200 generieren sollen wie: \"/Gateway*\", \"/recordings/*",
+    "deletestates": "Lösche unbenutze States?",
     "fastinterval": "",
     "fastlist": "",
     "interval": "",

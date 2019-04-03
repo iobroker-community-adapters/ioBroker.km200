@@ -6,6 +6,7 @@
     "accesskey": "Génération Accesskey sur Webseite https://ssl-account.com/km200.andreashahn.info/",
     "address": "Lien vers KM200",
     "blacklist": "liste de noms (pouvant être des parties avec \"*\") pour désactiver les états générateurs à partir de KM200 comme: \"/ Gateway *\", \"/ recordings / *",
+    "deletestates": "",
     "fastinterval": "",
     "fastlist": "",
     "interval": "",

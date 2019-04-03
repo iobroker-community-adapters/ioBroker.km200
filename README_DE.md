@@ -70,6 +70,11 @@ Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges privates Pa
 
 ## changelog
 
+### 2.0.1
+
+* Die Blacklist funktioniert jetzt in allen Situationen
+* Eine Abfrage ob alle unbenutzen States gelöscht werden sollen wurde hinzugefügt
+
 ### 1.9.9
 
 * Beta für v2.0.0

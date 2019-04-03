@@ -73,6 +73,11 @@ If you have entered the 64-character access-key you don't need the password, but
 
 ## changelog
 
+### 2.0.1
+
+* Blacklist is working now for any combination
+* Added option not to delete unsused states
+
 ### 1.9.9
 
 * Beta for v2.0.0

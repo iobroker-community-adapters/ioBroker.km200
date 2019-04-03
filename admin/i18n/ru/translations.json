@@ -6,6 +6,7 @@
     "accesskey": "Создание ключа доступа на веб-сайте https://ssl-account.com/km200.andreashahn.info/",
     "address": "KM200 link",
     "blacklist": "список имен (может состоять из частей с *) для отключения генерации состояний из KM200, например: \"/ Gateway *\", \"/ records / *",
+    "deletestates": "",
     "fastinterval": "",
     "fastlist": "",
     "interval": "",

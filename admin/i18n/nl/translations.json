@@ -6,6 +6,7 @@
     "accesskey": "Genereren van Accesskey op Webseite https://ssl-account.com/km200.andreashahn.info/",
     "address": "Link naar KM200",
     "blacklist": "lijst met namen (kan delen zijn met \"*\") om generatorstatussen van KM200 uit te schakelen, zoals: \"/ Gateway *\", \"/ opnames / *",
+    "deletestates": "",
     "fastinterval": "",
     "fastlist": "",
     "interval": "",
