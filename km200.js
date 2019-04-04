@@ -55,8 +55,7 @@ class KM200 {
             "/notifications",
             "/recordings",
             "/solarCircuits",
-            "/system",
-            "/notifications"
+            "/system"
         ];
         this.recNames = ['_Hours', '_Days', '_Months', '_2daysBefore', '_Today', '_Yesterday', '_2monthBefore', '_ThisMonth', '_LastMonth', '_2yearsBefore', '_ThisYear', '_LastYear'];
     }
@@ -592,7 +591,7 @@ function main() {
     let seq = new A.Sequence();
 
     //    var blacklist = A.J(A.C.blacklist);
-    let blacklist = A.trim(A.split(A.C.blacklist.replace(/"|\[|\]/g, ' '), ','));
+    let blacklist = A.trim(A.split(A.C.blacklist.replace(/"|\[|\]/g, ' '), ',')).filter(x => !!x);
     if (blacklist && Array.isArray(blacklist) && (blacklist.length > 1 || blacklist[0] !== ''))
         km200.addBlocked(blacklist);
     else
