@@ -586,7 +586,8 @@ function main() {
 
     A.I(`${A.ains} address: http://${A.C.adresse}`);
 
-    km200.init(A.C.adresse, A.C.accesskey.trim(), A.C.privatepassword.trim());
+    A.C.privatepassword = A.C.privatepassword ? A.C.privatepassword.trim() : '';
+    km200.init(A.C.adresse, A.C.accesskey.trim(), A.C.privatepassword);
 
     let seq = new A.Sequence();
 
