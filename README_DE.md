@@ -67,8 +67,9 @@ Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges privates Pa
 
 ## Changelog
 
-### 2.0.1
+### 2.0.2
 
+* Adapter Konfig Update
 * Die Blacklist funktioniert jetzt in allen Situationen
 * Eine Abfrage ob alle unbenutzen States gelöscht werden sollen wurde hinzugefügt
 

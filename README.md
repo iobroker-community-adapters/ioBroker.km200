@@ -74,8 +74,9 @@ If you have entered the 64-character access-key you don't need the password, but
 
 ## Changelog
 
-### 2.0.1
+### 2.0.2
 
+* Adapter config update
 * Blacklist is working now for any combination
 * Added option not to delete unsused states
 
