@@ -65,7 +65,7 @@ Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges privates Pa
 
 * Bessere Sprachunterstüzung und texte in mehreren Sprachen fü einige Elemente
 
-## changelog
+## Changelog
 
 ### 2.0.1
 
@@ -144,7 +144,7 @@ Wenn sie den 64-Zeichen-Access-Key haben brauchen sie kein richtiges privates Pa
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2016 Frank Joke 
+Copyright (c) 2016-2019 Frank Joke <frankjoke@hotmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

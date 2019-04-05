@@ -72,7 +72,7 @@ If you have entered the 64-character access-key you don't need the password, but
 
 * Additional language support and text translation
 
-## changelog
+## Changelog
 
 ### 2.0.1
 
@@ -155,7 +155,7 @@ Cleaning of objects / states for current adapters instance which are not part of
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2016 Frank Joke 
+Copyright (c) 2016-2019 Frank Joke <frankjoke@hotmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
