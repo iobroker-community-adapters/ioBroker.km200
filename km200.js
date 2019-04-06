@@ -567,8 +567,10 @@ function main() {
     // The adapters config (in the instance object everything under the attribute "native") is accessible via
     // A.C:
 
-    if (parseInt(A.C.interval) < 5)
-        A.C.interval = 5;
+    A.C.interval = (isNaN(Number(A.C.interval))) ? 30 : Number(A.C.interval);
+    A.C.fastinterval = (isNaN(Number(A.C.fastinterval))) ? 10 : Number(A.C.fastinterval);
+    A.C.slowinterval = (isNaN(Number(A.C.slowinterval))) ? 12 : Number(A.C.slowinterval);
+
     if ((A.debug = A.C.adresse.startsWith('debug!')))
         A.C.adresse = A.C.adresse.slice(A.D(`Debug mode on!`, 6)).trim();
 
@@ -603,8 +605,6 @@ function main() {
     let slowlist = A.trim(A.split(A.C.slowlist.replace(/"|\[|\]/g, ' '), ',')).map(i => makeRegexp(i));
     if (!slowlist) slowlist = [];
 
-    let slowint = A.C.slowinterval || 0;
-    let fastint = A.C.fastinterval || 0;
     let slowa = [];
     let fasta = [];
     let norma = [];
@@ -635,18 +635,19 @@ function main() {
                     norma.push(s);
             }
             A.I(`Interval=${A.C.interval} min, Norm-list: ${norma}\n`);
-            A.I(`Fast Interval=${fastint} min, Fast-List: ${fasta}\n`);
-            A.I(`Slow Interval=${slowint} hours, Slow-List: ${slowa}\n`);
+            A.I(`Fast Interval=${A.C.fastinterval} min, Fast-List: ${fasta}\n`);
+            A.I(`Slow Interval=${A.C.slowinterval} hours, Slow-List: ${slowa}\n`);
         })
         .then(() => updateStates())
         .then(() => {
             A.timer = [];
+            let f = seq.addp.bind(seq);
             if (norma.length)
-                A.timer.push(setInterval(seq.addp.bind(seq), Number(A.C.interval) * 1000 * 60, () => updateStates(norma)));
-            if (fasta.length && fastint)
-                A.timer.push(setInterval(seq.addp.bind(seq), Number(fastint) * 1000 * 60, () => updateStates(fasta)));
-            if (slowa.length)
-                A.timer.push(setInterval(seq.addp.bind(seq), Number(slowint) * 1000 * 60 * 60, () => updateStates(slowa)));
+                A.timer.push(setInterval(f, A.C.interval * 1000 * 60, () => updateStates(norma)));
+            if (fasta.length && A.C.fastinterval)
+                A.timer.push(setInterval(f, A.C.fastinterval * 1000 * 60, () => updateStates(fasta)));
+            if (slowa.length && A.C.slowinterval)
+                A.timer.push(setInterval(f, A.C.slowinterval * 1000 * 60 * 60, () => updateStates(slowa)));
         })
         .then(() => A.C.deletestates ? A.cleanup('*') : null)
         .then(A.nop, A.nop)
