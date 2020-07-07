@@ -19,6 +19,7 @@ Der Adapter unterstützt folgende Heizungsnalagen:
 * Junkers mit dem [Netzwerkapter](https://www.bosch-smarthome.com/de/de/mblani) MB LANi
 * Bosch mit dem [Netzwerkapter](https://www.bosch-smarthome.com/de/de/mblani) MB LANi
 
+Beim Zugriff auf die Systeme verwende ich code welcher von Andreas Hahn geschrieben wurde und in seinem Blog [da](https://www.andreashahn.info/2014/07/kernthema-am-eigenen-leibe) and [dort](https://www.andreashahn.info/2014/08/easycontrol-pro-unter-der-lupe-oder-m) beschrieben ist.
 
 Damit kann man über die Buderus-Webseite ([https://www.buderus-connect.de]) oder die 'EasyControl' App vom Handy steuern. App und Buderus-Website funktioniert auch mit Junkers und Bosch Heizungen.
 

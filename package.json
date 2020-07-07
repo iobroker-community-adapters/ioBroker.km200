@@ -10,7 +10,8 @@
     {
       "name": "Frank Joke",
       "email": "frankjoke@hotmail.com"
-    }
+    },
+    "Andreas Hahn"
   ],
   "homepage": "https://github.com/frankjoke/ioBroker.km200",
   "license": "MIT",

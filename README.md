@@ -18,6 +18,7 @@ The adapter supports the following heating system:
 * Junkers with the [network adapter](https://www.bosch-smarthome.com/de/mblani) MB LANi
 * Bosch with the [Network Adapter](https://www.bosch-smarthome.com/en/mblani) MB LANi
 
+For access to the systems I use code originally developed by Andreas Hahn and described in his blog [entry here](https://www.andreashahn.info/2014/07/kernthema-am-eigenen-leibe) and [entry there](https://www.andreashahn.info/2014/08/easycontrol-pro-unter-der-lupe-oder-m).
 
 The heating system can be controlled via the Buderus website ([https://www.buderus-connect.de]) or by the 'EasyControl' app from your mobile phone. App and Buderus website also works with Junkers and Bosch heatings systems.
 
