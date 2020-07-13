@@ -1,7 +1,7 @@
 /**
  *
  * Buderus KM200 Adapter
- * v 1.1.9 2019
+ * v 2.03 2020
  */
 /*jshint -W030*/
 //// jxshint node:true, esversion:6, strict:true, undef:true, unused:true
