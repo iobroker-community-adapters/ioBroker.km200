@@ -281,7 +281,7 @@ class KM200 {
                     if (o.type === 'yRecording' && o.recording && o.recording.length > 0) {
                         o.type = 'arrayData';
                         //                        A.If('item %s should get %s', o.id, o.recordedResource.id.endsWith('Power'));
-                        o.values = o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / (o.recordedResource.id.endsWith('Power') ? 60 : x.c)) / 1000.0 : NaN);
+                        o.values = o.recording.map(x => x.c ? Math.round((1000.0 * x.y) / (o.recordedResource.id.endsWith('Power') ? 60.0 : x.c)) / 1000.0 : NaN);
                         delete o.recordedResource;
                         delete o.recording;
                         o.id = oservice;
