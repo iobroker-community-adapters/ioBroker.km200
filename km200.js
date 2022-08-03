@@ -449,10 +449,12 @@ function createStates() {
                     o.valIs = 'states';
                     t = 'number';
                     v = o.allowedValues.indexOf(o.value);
-                    s = [];
-                    for (let ii = 0; ii < o.allowedValues.length; ++ii)
-                        s.push(ii.toString() + ':' + o.allowedValues[ii]);
-                    s = s.join(';');
+                    // change states to new object states format!
+                    o.allowedValues.forEach((ii, i) => s[i] = ii);                    
+//                    s = [];
+//                    for (let ii = 0; ii < o.allowedValues.length; ++ii)
+//                        s.push(ii.toString() + ':' + o.allowedValues[ii]);
+//                    s = s.join(';');
                 } else
                     t = 'string';
                 break;
