@@ -394,8 +394,10 @@ A.stateChange = function (id, state) {
     let val = state.val;
     iid = states[iid];
     if (iid && iid.common.states) { // convert states in ioBroker to allowed string values for KM200
-        const sa = iid.common.states.split(';');
-        val = sa[state.val].split(':')[1];
+      if ( typeof iid.common.states === 'string') {
+         const sa = iid.common.states.split(';');
+         val = sa[state.val].split(':')[1];
+        } else val = iid.common.states[states.val];
         //            adapter.log.info('Check Converted for '+iid+' State '+A.O(iid) + ' to ' + val);
     }
 
