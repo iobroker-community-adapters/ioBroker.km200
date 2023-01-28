@@ -397,8 +397,8 @@ A.stateChange = function (id, state) {
       if ( typeof iid.common.states === 'string') {
          const sa = iid.common.states.split(';');
          val = sa[state.val].split(':')[1];
-        } else val = iid.common.states[states.val];
-        //            adapter.log.info('Check Converted for '+iid+' State '+A.O(iid) + ' to ' + val);
+        } else val = iid.common.states[state.val];
+              //      A.I('Check Converted for '+iid+' State '+A.O(state.val) + ' to ' + val);
     }
 
     return km200.set(serv, val)
