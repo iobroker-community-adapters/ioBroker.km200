@@ -1,0 +1,6 @@
+**/.eslintrc.js
+admin/words.js
+admin/**
+lib/**
+test/**
+km200.js
