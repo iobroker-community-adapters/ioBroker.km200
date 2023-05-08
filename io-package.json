@@ -3,7 +3,18 @@
         "name": "km200",
         "version": "2.0.3",
         "title": "Buderus KM200",
-        "titleLang": "Heating system adapter for Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi",
+        "titleLang": {
+            "en": "Buderus KM200",
+            "de": "Buderus KM200",
+            "ru": "Buderus KM200",
+            "pt": "Buderus KM200",
+            "nl": "Buderus KM200",
+            "fr": "Buderus KM200",
+            "it": "Buderus KM200",
+            "es": "Buderus KM200",
+            "pl": "Buderus KM200",
+            "zh-cn": "Buderus KM200"
+        },
         "desc": {
             "en": "ioBroker Buderus KMx00",
             "de": "ioBroker Buderus KMx00",
