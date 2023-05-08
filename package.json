@@ -39,11 +39,31 @@
     "js-rijndael": "^1.0.0"
   },
   "devDependencies": {
-    "axios": "^0.21.1",
-    "chai": "^4.1.2",
-    "gulp": "^4.0.0",
-    "mocha": "^4.1.0",
-    "nan": "2.7.0"
+    "@alcalzone/release-script": "^3.5.9",
+    "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
+    "@alcalzone/release-script-plugin-license": "^3.5.9",
+    "@alcalzone/release-script-plugin-manual-review": "^3.5.9",
+    "@iobroker/adapter-dev": "^1.2.0",
+    "@iobroker/testing": "^4.1.0",
+    "@tsconfig/node14": "^1.0.3",
+    "@types/chai": "^4.3.5",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.16.3",
+    "@types/proxyquire": "^1.3.28",
+    "@types/sinon": "^10.0.14",
+    "@types/sinon-chai": "^3.2.9",
+    "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "mocha": "^10.2.0",
+    "prettier": "^2.8.8",
+    "proxyquire": "^2.1.3",
+    "sinon": "^15.0.4",
+    "sinon-chai": "^3.7.0",
+    "typescript": "~5.0.4"
   },
   "bugs": {
     "url": "https://github.com/frankjoke/ioBroker.km200/issues"
@@ -51,6 +71,13 @@
   "main": "km200.js",
   "readmeFilename": "README.md",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit"
+    "test:js": "mocha --config test/mocharc.custom.json \"{!(node_modules|test)/**/*.test.js,*.test.js,test/**/test!(PackageFiles|Startup).js}\"",
+    "test:package": "mocha test/package --exit",
+    "test:integration": "mocha test/integration --exit",
+    "test": "npm run test:js && npm run test:package",
+    "check": "tsc --noEmit -p tsconfig.check.json",
+    "lint": "eslint .",
+    "translate": "translate-adapter",
+    "release": "release-script"
   }
 }
