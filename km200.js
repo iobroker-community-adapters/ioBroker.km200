@@ -8,7 +8,7 @@
 "use strict";
 const crypto = require('crypto'),
     mcrypt = require('js-rijndael'),
-    A = require('@frankjoke/myadapter').MyAdapter;
+    A = require('./lib/myAdapter').MyAdapter;
 
 const km200_crypt_md5_salt = new Uint8Array([
     0x86, 0x78, 0x45, 0xe9, 0x7c, 0x4e, 0x29, 0xdc,
@@ -61,7 +61,7 @@ class KM200 {
     }
 
 
-    /*  
+    /*
      *  initialize  KM200
      *  accessUrl = string  z.b. 192.168.1.xxx oder wie bei mir BuderusKM200.fritz.box
      *  gwpw = Gatewa Passwort
@@ -159,7 +159,7 @@ class KM200 {
         }
     }
 
-    /*  
+    /*
      *  Get data from KM200
      *  service = string of service like '/system' to access
      *  callback(err,data) with received data, either an array or an object
@@ -425,9 +425,9 @@ function createStates() {
     states = {};
     // I got Types:{ floatValue: 89, stringValue: 36, switchProgram: 4, systeminfo: 3, errorList: 1, yRecording: 8, arrayData: 5 }
     //       Units:{ C: 34, undefined: 57, 'l/min': 1, mins: 7, '%': 12, kW: 13, 'µA': 2, Pascal: 2, kWh: 6, 'kg/l': 2, ' ': 6, 'l/h': 2, bar: 2 }
-    // looks like: { id: 146,   type: 146,   writeable: 146,   recordable: 142,   value: 125,   unitOfMeasure: 89,   
-    //      allowedValues: 27,   setpointProperty: 4,   maxNbOfSwitchPoints: 4,   maxNbOfSwitchPointsPerDay: 4,   switchPointTimeRaster: 4,   
-    //      switchPoints: 4,   minValue: 12,   maxValue: 12,   values: 9,   recordedResource: 8,   interval: 8,   sampleRate: 8,   
+    // looks like: { id: 146,   type: 146,   writeable: 146,   recordable: 142,   value: 125,   unitOfMeasure: 89,
+    //      allowedValues: 27,   setpointProperty: 4,   maxNbOfSwitchPoints: 4,   maxNbOfSwitchPointsPerDay: 4,   switchPointTimeRaster: 4,
+    //      switchPoints: 4,   minValue: 12,   maxValue: 12,   values: 9,   recordedResource: 8,   interval: 8,   sampleRate: 8,
     //      'recording-type': 8,   recording: 8 }
     return A.seriesIn(km200.scannedServices, (n) => {
         let o = km200.scannedServices[n];
@@ -452,7 +452,7 @@ function createStates() {
                     t = 'number';
                     v = o.allowedValues.indexOf(o.value);
                     // change states to new object states format!
-                    o.allowedValues.forEach((ii, i) => s[i] = ii);                    
+                    o.allowedValues.forEach((ii, i) => s[i] = ii);
 //                    s = [];
 //                    for (let ii = 0; ii < o.allowedValues.length; ++ii)
 //                        s.push(ii.toString() + ':' + o.allowedValues[ii]);
