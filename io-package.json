@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "km200",
-        "version": "2.0.3",
+        "version": "2.0.4",
         "title": "Buderus KM200",
         "titleLang": {
             "en": "Buderus KM200",
@@ -44,6 +44,19 @@
             "scada"
         ],
         "news": {
+            "2.0.4": {
+                "en": "We have prepared the adapter for js-controller version 5",
+                "de": "Wir haben den Adapter für js-controller Version 5 vorbereitet",
+                "ru": "Мы подготовили адаптер для js-controller версии 5",
+                "pt": "Nós preparamos o adaptador para a versão js-controller 5",
+                "nl": "We hebben de adapter voorbereid voor J's-controller versie 5",
+                "fr": "Nous avons préparé l'adaptateur pour js-controller version 5",
+                "it": "Abbiamo preparato l'adattatore per js-controller versione 5",
+                "es": "Hemos preparado el adaptador para js-controller versión 5",
+                "pl": "Zastosowano adapter do wersji 5 js",
+                "uk": "Ми підготували адаптер для js-controller версії 5",
+                "zh-cn": "我们已准备好供控制的手稿5"
+            },
             "2.0.3": {
                 "en": "change blacklist usage and add delete states option",
                 "de": "Änderung bei der Nutzung der Blacklist und eine Option um nicht immer unbenutze States zu löschen dazugefügt"

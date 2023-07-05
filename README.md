@@ -75,7 +75,7 @@ If you have entered the 64-character access-key you don't need the password, but
 
 ## Changelog
 
-### **WORK IN PROGRESS**
+### 2.0.4
 * fixed issue with js-controller version 5
 
 ### 2.0.3
