@@ -35,6 +35,7 @@
     "url": "https://github.com/frankjoke/ioBroker.km200"
   },
   "dependencies": {
+    "@iobroker/adapter-core": "^2.6.8",
     "js-rijndael": "^1.0.0"
   },
   "devDependencies": {
