@@ -108,7 +108,19 @@
         "authors": [{
             "name": "Frank Joke",
             "email": "frankjoke@hotmail.com"
-        }]
+        }],
+        "connectionType": "local",
+        "dataSource": "pull",
+        "dependencies": [
+            {
+                "js-controller": ">=4.0.24"
+            }
+        ],
+        "globalDependencies": [
+            {
+                "admin": ">=5.1.13"
+            }
+        ]
     },
     "native": {
         "adresse": "BuderusKM200.fritz.box",
