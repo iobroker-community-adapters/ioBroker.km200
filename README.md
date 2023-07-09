@@ -77,12 +77,10 @@ If you have entered the 64-character access-key you don't need the password, but
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 2.0.5 (2023-07-09)
 * (McM1957) Missing dependy to iobroker/adapter-core has been added
 * (McM1957) Eslint has been activated and required adaptions to code have been done.
 * (McM1957) dependencies have been updated
-
 
 ### 2.0.4
 * fixed issue with js-controller version 5
@@ -100,7 +98,7 @@ If you have entered the 64-character access-key you don't need the password, but
 * Changed readout for 'mins' units to enable these fields for read/write
 * Implemented 2 additional time schedule where you can define fast cycle (1-30 minutes), normal with 30-60 minutes and slow with 1-24 hours. You define the lists whjich go to fast or slow in a similar way than the blocklist.
 * Blocklist syntax changed sligly. `/` or `^` first is for from beginning, `*` can now be everywhere and `$` can be the end
-* `switchPrograms` are supported now for read and write!  
+* `switchPrograms` are supported now for read and write!
 
 ### 1.2.4
 
@@ -117,7 +115,6 @@ If you have entered the 64-character access-key you don't need the password, but
 * Adapter uses other module and removes need for mcrypt which makes it working on all platforms
 * Adapter can now have debug mode set via '!' at end of address
 * Adapter needs node >=v6
-
 
 ### 1.2.0
 * Integrating Schupu's changes and also make the adapter ready for compact mode

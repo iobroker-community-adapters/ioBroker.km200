@@ -1,139 +1,135 @@
 {
-    "common": {
-        "name": "km200",
-        "version": "2.0.4",
-        "title": "Buderus KM200",
-        "titleLang": {
-            "en": "Buderus KM200",
-            "de": "Buderus KM200",
-            "ru": "Buderus KM200",
-            "pt": "Buderus KM200",
-            "nl": "Buderus KM200",
-            "fr": "Buderus KM200",
-            "it": "Buderus KM200",
-            "es": "Buderus KM200",
-            "pl": "Buderus KM200",
-            "zh-cn": "Buderus KM200"
-        },
-        "desc": {
-            "en": "ioBroker Buderus KMx00",
-            "de": "ioBroker Buderus KMx00",
-            "ru": "ioBroker Buderus KMx00 драйвер как образец",
-            "pt": "Buderus KMx00 da ioBroker",
-            "nl": "ioBroker Buderus KM200-adapter",
-            "fr": "Adaptateur ioBroker Buderus KM200",
-            "it": "IoBroker Buderus KM200 Adapter",
-            "es": "Adaptador ioBroker Buderus KM200",
-            "pl": "Adapter ioBroker Buderus KM200",
-            "zh-cn": "ioBroker Buderus KM200适配器"
-        },
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "loglevel": "info",
-        "icon": "km200.png",
-        "materialize": true,
-        "compact": true,
-        "enabled": true,
-        "extIcon": "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
-        "keywords": [
-            "Buderus",
-            "KM200", "KM50", "KM100", "KM300", "Junkers", "Bosch",
-            "vis",
-            "GUI",
-            "graphical",
-            "scada"
-        ],
-        "news": {
-            "2.0.4": {
-                "en": "We have prepared the adapter for js-controller version 5",
-                "de": "Wir haben den Adapter für js-controller Version 5 vorbereitet",
-                "ru": "Мы подготовили адаптер для js-controller версии 5",
-                "pt": "Nós preparamos o adaptador para a versão js-controller 5",
-                "nl": "We hebben de adapter voorbereid voor J's-controller versie 5",
-                "fr": "Nous avons préparé l'adaptateur pour js-controller version 5",
-                "it": "Abbiamo preparato l'adattatore per js-controller versione 5",
-                "es": "Hemos preparado el adaptador para js-controller versión 5",
-                "pl": "Zastosowano adapter do wersji 5 js",
-                "uk": "Ми підготували адаптер для js-controller версії 5",
-                "zh-cn": "我们已准备好供控制的手稿5"
-            },
-            "2.0.3": {
-                "en": "change blacklist usage and add delete states option",
-                "de": "Änderung bei der Nutzung der Blacklist und eine Option um nicht immer unbenutze States zu löschen dazugefügt"
-            },
-            "2.0.0": {
-                "en": "V2.0.0 version, recordings of power data show now right values",
-                "de": "V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und die Power-werte sind jetzt richtig wie in der web-app"
-            },
-            "1.9.9": {
-                "en": "Beta for V2.0.0 version, recordings, fast and slow lists supported",
-                "de": "Betaversion für V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und es gibt 3 verschiedene Ausleseintervalle!"
-            },
-            "1.2.4": {
-                "en": "Beta for next version, recordings supported",
-                "de": "Betaversion für nächstes Update. Es werden jetzt auch die 'recordings' ausgelesen!"
-            },
-            "1.2.3": {
-                "en": "Implemented a correction to show also switchPrograms",
-                "de": "Habe Änderungen vorgenommen um auch switchPrograms anzuzeigen"
-            },
-            "1.2.2": {
-                "en": "Allowed adapter to use no valid password if 64 character accesskey is provided",
-                "de": "Wen nur 64-Zeichen access-key verfügbar ist braucht kein gültiges passwort vorhanden sein, es sollte aber trotzdem nicht leer sein!"
-            },
-            "1.2.1": {
-                "en": "bug bei set values cortrected",
-                "de": "Fehler bein Setzten der Werte wurde behoben."
-            },
-            "1.2.0": {
-                "en": "Supports compact mode, Admin3 and gets access key by it self",
-                "de": "Compact mode sowie Admin3-Unterstützzung und accesskey kann jetzt intern berechnet werden."
-            },
-            "1.1.7": {
-                "en": "Supports Admin3 and getting access key by it self",
-                "de": "Admin3 Unsterstützung"
-            },
-            "1.1.5": {
-                "en": "Adapter communication and retries more often to catch more errors, also for writes.",
-                "de": "Adapter versucht es öfter die Daten vom KM200 zu lesen um interne Server Error 500 zu umgehen"
-            },
-            "1.1.1": {
-                "en": "Adapter handles better communication and retries if he got an error.",
-                "de": "Adapter wurde auf bessere Fehlerbehandlung umgestellt und versucht es bei Lesefehler nochmals."
-            }
-        },
-        "readme": "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
-        "type": "climate-control",
-        "license": "MIT",
-        "authors": [{
-            "name": "Frank Joke",
-            "email": "frankjoke@hotmail.com"
-        }],
-        "connectionType": "local",
-        "dataSource": "poll",
-        "dependencies": [
-            {
-                "js-controller": ">=4.0.24"
-            }
-        ],
-        "globalDependencies": [
-            {
-                "admin": ">=5.1.13"
-            }
-        ]
+  "common": {
+    "name": "km200",
+    "version": "2.0.5",
+    "title": "Buderus KM200",
+    "titleLang": {
+      "en": "Buderus KM200",
+      "de": "Buderus KM200",
+      "ru": "Buderus KM200",
+      "pt": "Buderus KM200",
+      "nl": "Buderus KM200",
+      "fr": "Buderus KM200",
+      "it": "Buderus KM200",
+      "es": "Buderus KM200",
+      "pl": "Buderus KM200",
+      "zh-cn": "Buderus KM200"
     },
-    "native": {
-        "adresse": "BuderusKM200.fritz.box",
-        "blacklist": "/gateway*, *.switchPrograms.*, *.holidayModes.*",
-        "fastlist": "*.actualTemp$, *.pumpModulation$, roomtemperature$, actualPower$, actualModulation$, ^notifications$, *_t1$",
-        "slowlist": "*._Days$, *._Months",
-        "interval": 30,
-        "fastinterval": 2,
-        "slowinterval": 6,
-        "deletestates": true,
-        "accesskey": "wwww-xxxx-yyyy-zzzz",
-        "privatepassword": "please enter your password with mobile/web app"
+    "desc": {
+      "en": "ioBroker Buderus KMx00",
+      "de": "ioBroker Buderus KMx00",
+      "ru": "ioBroker Buderus KMx00 драйвер как образец",
+      "pt": "Buderus KMx00 da ioBroker",
+      "nl": "ioBroker Buderus KM200-adapter",
+      "fr": "Adaptateur ioBroker Buderus KM200",
+      "it": "IoBroker Buderus KM200 Adapter",
+      "es": "Adaptador ioBroker Buderus KM200",
+      "pl": "Adapter ioBroker Buderus KM200",
+      "zh-cn": "ioBroker Buderus KM200适配器"
     },
-    "objects": [],
-    "instanceObjects": []
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "loglevel": "info",
+    "icon": "km200.png",
+    "materialize": true,
+    "compact": true,
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/frankjoke/ioBroker.km200/master/admin/km200.png",
+    "keywords": [
+      "Buderus",
+      "KM200",
+      "KM50",
+      "KM100",
+      "KM300",
+      "Junkers",
+      "Bosch",
+      "vis",
+      "GUI",
+      "graphical",
+      "scada"
+    ],
+    "news": {
+      "2.0.5": {
+        "en": "Missing dependy to iobroker/adapter-core has been added\nEslint has been activated and required adaptions to code have been done.\ndependencies have been updated",
+        "de": "Fehlende Abhängigkeit von iobroker/adapter-core wurde hinzugefügt\nEslint wurde aktiviert und erforderliche Anpassungen am Code vorgenommen.\nAbhängigkeiten wurden aktualisiert",
+        "ru": "Отсутствует зависимость от iobroker/adapter-core добавлена\nEslint была активирована и выполнены необходимые адаптации к коду.\nзависимости были обновлены",
+        "pt": "Falta de confiança para iobroker/adapter-core foi adicionado\nEslint foi ativado e necessário adaptações ao código foram feitas.\ndependências foram atualizadas",
+        "nl": "Vermiste afhankelijkheid aan iobroker/adapter-core is toegevoegd\nEslint is geactiveerd en vereiste aanpassingen voor de code zijn gedaan.\nafhankelijkheid is geüpdateerd",
+        "fr": "La dépendance manquante à iobroker/adapter-core a été ajoutée\nEslint a été activé et les adaptations nécessaires au code ont été effectuées.\nles dépendances ont été mises à jour",
+        "it": "Mancante dipendenza da iobroker/adapter-core è stato aggiunto\nEslint è stato attivato e sono stati fatti adattamenti necessari al codice.\nle dipendenze sono state aggiornate",
+        "es": "Se ha añadido la falta de confianza a iobroker/adapter-core\nEslint ha sido activado y se han hecho adaptaciones necesarias al código.\nlas dependencias se han actualizado",
+        "pl": "W zależności od iobroker/adapter-core został dodany\nEslint został aktywowany i dostosowywany do kodu.\nzależności były aktualizowane",
+        "uk": "Додана залежність до iobroker/adapter-core\nEslint було активовано та проведено необхідні адаптації до коду.\nбуло оновлено залежності",
+        "zh-cn": "此外,还增加了向碘化器/道普托-核心的疏散。\n已经启动,需要修改守则。.\n已更新了依赖情况"
+      },
+      "2.0.4": {
+        "en": "We have prepared the adapter for js-controller version 5",
+        "de": "Wir haben den Adapter für js-controller Version 5 vorbereitet",
+        "ru": "Мы подготовили адаптер для js-controller версии 5",
+        "pt": "Nós preparamos o adaptador para a versão js-controller 5",
+        "nl": "We hebben de adapter voorbereid voor J's-controller versie 5",
+        "fr": "Nous avons préparé l'adaptateur pour js-controller version 5",
+        "it": "Abbiamo preparato l'adattatore per js-controller versione 5",
+        "es": "Hemos preparado el adaptador para js-controller versión 5",
+        "pl": "Zastosowano adapter do wersji 5 js",
+        "uk": "Ми підготували адаптер для js-controller версії 5",
+        "zh-cn": "我们已准备好供控制的手稿5"
+      },
+      "2.0.3": {
+        "en": "change blacklist usage and add delete states option",
+        "de": "Änderung bei der Nutzung der Blacklist und eine Option um nicht immer unbenutze States zu löschen dazugefügt"
+      },
+      "2.0.0": {
+        "en": "V2.0.0 version, recordings of power data show now right values",
+        "de": "V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und die Power-werte sind jetzt richtig wie in der web-app"
+      },
+      "1.9.9": {
+        "en": "Beta for V2.0.0 version, recordings, fast and slow lists supported",
+        "de": "Betaversion für V2.0.0. Es werden jetzt auch die 'recordings' ausgelesen und es gibt 3 verschiedene Ausleseintervalle!"
+      },
+      "1.2.4": {
+        "en": "Beta for next version, recordings supported",
+        "de": "Betaversion für nächstes Update. Es werden jetzt auch die 'recordings' ausgelesen!"
+      },
+      "1.2.3": {
+        "en": "Implemented a correction to show also switchPrograms",
+        "de": "Habe Änderungen vorgenommen um auch switchPrograms anzuzeigen"
+      }
+    },
+    "readme": "https://github.com/frankjoke/ioBroker.km200/blob/master/README.md",
+    "type": "climate-control",
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Frank Joke",
+        "email": "frankjoke@hotmail.com"
+      }
+    ],
+    "connectionType": "local",
+    "dataSource": "poll",
+    "dependencies": [
+      {
+        "js-controller": ">=4.0.24"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.1.13"
+      }
+    ]
+  },
+  "native": {
+    "adresse": "BuderusKM200.fritz.box",
+    "blacklist": "/gateway*, *.switchPrograms.*, *.holidayModes.*",
+    "fastlist": "*.actualTemp$, *.pumpModulation$, roomtemperature$, actualPower$, actualModulation$, ^notifications$, *_t1$",
+    "slowlist": "*._Days$, *._Months",
+    "interval": 30,
+    "fastinterval": 2,
+    "slowinterval": 6,
+    "deletestates": true,
+    "accesskey": "wwww-xxxx-yyyy-zzzz",
+    "privatepassword": "please enter your password with mobile/web app"
+  },
+  "objects": [],
+  "instanceObjects": []
 }
