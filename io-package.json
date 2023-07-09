@@ -110,7 +110,7 @@
             "email": "frankjoke@hotmail.com"
         }],
         "connectionType": "local",
-        "dataSource": "pull",
+        "dataSource": "poll",
         "dependencies": [
             {
                 "js-controller": ">=4.0.24"
