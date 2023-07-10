@@ -1,3 +1,15 @@
+
+# This adapter is DEPRECATED and will not be developed any further
+
+-----
+
+Currently there is no further development for this adapter planned. __Please migrate to ioBroker.ems-esp adapter__ which is maintained.
+If you miss any features at ioBroker.ems-esp open an issue at that repository (https://github.com/tp1de/ioBroker.ems-esp/issues).
+
+IoBroker.km200 will stay available for some time, but keep in mind, that it will not be adapted to  node 20 and upcoming js-controller v5.
+
+-----
+
 # ioBroker.km200
 
 ## for Buderus KM50/KM100/KM200/KM300 & Junkers/Bosch MB LANi
